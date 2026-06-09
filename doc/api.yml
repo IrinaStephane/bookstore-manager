@@ -1,0 +1,844 @@
+openapi: 3.0.3
+info:
+  title: Library Book API
+  description: |
+    REST API for the Book module of the Library Management System.
+    Covers full CRUD operations for Books, along with read operations
+    for related entities (Author, Genre, Publisher, BookEdition, Review).
+
+    **Stack:** Spring Boot · Java · Lombok (`@Getter` `@Setter` `@NoArgsConstructor` `@AllArgsConstructor`)
+  version: 1.0.0
+  contact:
+    name: Library Dev Team
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: Books
+    description: CRUD operations on Book
+  - name: Authors
+    description: Author lookup (used when creating/updating books)
+  - name: Genres
+    description: Genre lookup (used when creating/updating books)
+  - name: Publishers
+    description: Publisher lookup
+  - name: BookEditions
+    description: Editions attached to a book
+  - name: Reviews
+    description: Reviews attached to a book
+
+# ---------------------------------------------------------------------------
+# PATHS
+# ---------------------------------------------------------------------------
+paths:
+  /books:
+    get:
+      tags: [Books]
+      summary: List all books
+      operationId: getAllBooks
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParam'
+        - name: language
+          in: query
+          description: Filter by language
+          required: false
+          schema:
+            $ref: '#/components/schemas/Language'
+        - name: genreId
+          in: query
+          description: Filter by genre ID
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: authorId
+          in: query
+          description: Filter by author ID
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: search
+          in: query
+          description: Full-text search on title / description
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Books]
+      summary: Create a new book
+      operationId: createBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreateRequest'
+      responses:
+        '201':
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /books/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+
+    get:
+      tags: [Books]
+      summary: Get a book by ID
+      operationId: getBookById
+      responses:
+        '200':
+          description: Book found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags: [Books]
+      summary: Replace a book entirely
+      operationId: updateBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookUpdateRequest'
+      responses:
+        '200':
+          description: Book updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags: [Books]
+      summary: Partially update a book
+      operationId: patchBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookPatchRequest'
+      responses:
+        '200':
+          description: Book patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Books]
+      summary: Delete a book
+      operationId: deleteBook
+      responses:
+        '204':
+          description: Book deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ── BOOK → EDITIONS ───────────────────────────────────────────────────────
+  /books/{id}/editions:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+
+    get:
+      tags: [BookEditions]
+      summary: List all editions of a book
+      operationId: getEditionsByBook
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of editions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookEditionPage'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ── BOOK → REVIEWS ────────────────────────────────────────────────────────
+  /books/{id}/reviews:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+
+    get:
+      tags: [Reviews]
+      summary: List all reviews for a book
+      operationId: getReviewsByBook
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewPage'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ── AUTHORS ───────────────────────────────────────────────────────────────
+  /authors:
+    get:
+      tags: [Authors]
+      summary: List all authors
+      operationId: getAllAuthors
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: search
+          in: query
+          description: Search by first or last name
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of authors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorPage'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /authors/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+
+    get:
+      tags: [Authors]
+      summary: Get an author by ID
+      operationId: getAuthorById
+      responses:
+        '200':
+          description: Author found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ── GENRES ────────────────────────────────────────────────────────────────
+  /genres:
+    get:
+      tags: [Genres]
+      summary: List all genres
+      operationId: getAllGenres
+      responses:
+        '200':
+          description: List of genres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GenreResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /genres/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+
+    get:
+      tags: [Genres]
+      summary: Get a genre by ID
+      operationId: getGenreById
+      responses:
+        '200':
+          description: Genre found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ── PUBLISHERS ────────────────────────────────────────────────────────────
+  /publishers:
+    get:
+      tags: [Publishers]
+      summary: List all publishers
+      operationId: getAllPublishers
+      responses:
+        '200':
+          description: List of publishers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublisherResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /publishers/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdPath'
+
+    get:
+      tags: [Publishers]
+      summary: Get a publisher by ID
+      operationId: getPublisherById
+      responses:
+        '200':
+          description: Publisher found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublisherResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+# ---------------------------------------------------------------------------
+# COMPONENTS
+# ---------------------------------------------------------------------------
+components:
+
+  # ── PARAMETERS ────────────────────────────────────────────────────────────
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: Entity primary key
+
+    PageParam:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      description: Zero-based page index
+
+    SizeParam:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+      description: Number of items per page
+
+    SortParam:
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        example: title,asc
+      description: "Sort field and direction, e.g. `title,asc`"
+
+  # ── RESPONSES ─────────────────────────────────────────────────────────────
+  responses:
+    BadRequest:
+      description: Invalid request payload or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    Conflict:
+      description: Resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+  # ── SCHEMAS ───────────────────────────────────────────────────────────────
+  schemas:
+
+    # ── Enumerations ──────────────────────────────────────────────────────
+
+    Language:
+      type: string
+      enum: [FR, EN, MG, ES, DE, AR, ZH]
+      description: Supported book languages
+
+    BookFormat:
+      type: string
+      enum: [HARDCOVER, PAPERBACK, POCKET, DIGITAL]
+      description: Physical or digital format of a book edition
+
+    BookCondition:
+      type: string
+      enum: [NEW, USED_GOOD, USED_FAIR]
+      description: Physical condition of a book edition
+
+    PaymentMethod:
+      type: string
+      enum: [CASH, MOBILE_MONEY, CARD, TRANSFER]
+
+    SaleStatus:
+      type: string
+      enum: [PENDING, CONFIRMED, CANCELLED]
+
+    RoleName:
+      type: string
+      enum: [ROLE_ADMIN, ROLE_MANAGER, ROLE_CLIENT]
+
+    # ── Author ─────────────────────────────────────────────────────────────
+
+    AuthorSummary:
+      description: Lightweight author reference embedded in book responses
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        firstName:
+          type: string
+          example: "Victor"
+        lastName:
+          type: string
+          example: "Hugo"
+
+    AuthorResponse:
+      description: Full author representation
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        firstName:
+          type: string
+          example: "Victor"
+        lastName:
+          type: string
+          example: "Hugo"
+        bio:
+          type: string
+          example: "French poet, novelist, and dramatist."
+
+    AuthorPage:
+      # @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+
+    # ── Genre ──────────────────────────────────────────────────────────────
+
+    GenreSummary:
+      description: Lightweight genre reference embedded in book responses
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          example: "Science Fiction"
+
+    GenreResponse:
+      description: Full genre representation
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          example: "Science Fiction"
+
+    # ── Publisher ──────────────────────────────────────────────────────────
+
+    PublisherSummary:
+      description: Lightweight publisher reference embedded in edition responses
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          example: "Gallimard"
+        country:
+          type: string
+          example: "France"
+
+    PublisherResponse:
+      description: Full publisher representation
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          example: "Gallimard"
+        country:
+          type: string
+          example: "France"
+
+    # ── BookEdition ────────────────────────────────────────────────────────
+
+    BookEditionResponse:
+      description: |
+        Full edition representation.
+        Methods `incrementStock`, `decrementStock`, `isLowStock` are server-side only
+        and NOT exposed through the API — implement them in the service/entity layer.
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        isbn:
+          type: string
+          example: "978-2-07-036024-5"
+        format:
+          $ref: '#/components/schemas/BookFormat'
+        sellingPrice:
+          type: number
+          format: double
+          example: 14.99
+        publishedDate:
+          type: string
+          format: date
+          example: "2021-03-15"
+        coverImageUrl:
+          type: string
+          format: uri
+          example: "https://cdn.library.mg/covers/978-2-07-036024-5.jpg"
+        condition:
+          $ref: '#/components/schemas/BookCondition'
+        quantityInStock:
+          type: integer
+          example: 42
+        totalReceived:
+          type: integer
+          readOnly: true
+          example: 100
+        totalSold:
+          type: integer
+          readOnly: true
+          example: 58
+        publisher:
+          $ref: '#/components/schemas/PublisherSummary'
+
+    BookEditionPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookEditionResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+
+
+    ReviewResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 4
+        comment:
+          type: string
+          example: "Great read, highly recommended."
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        userId:
+          type: integer
+          format: int64
+          readOnly: true
+
+    ReviewPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+
+    # ── Book ───────────────────────────────────────────────────────────────
+
+    BookResponse:
+      description: Full book representation returned by the API
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          example: 1
+        title:
+          type: string
+          example: "Les Misérables"
+        description:
+          type: string
+          example: "A sweeping tale of justice and redemption in 19th-century France."
+        language:
+          $ref: '#/components/schemas/Language'
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorSummary'
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenreSummary'
+        editions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookEditionResponse'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewResponse'
+
+    BookPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+
+    BookCreateRequest:
+      description: Payload for creating a new book
+      type: object
+      required:
+        - title
+        - language
+        - authorIds
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Les Misérables"
+        description:
+          type: string
+          maxLength: 2000
+          example: "A sweeping tale of justice and redemption in 19th-century France."
+        language:
+          $ref: '#/components/schemas/Language'
+        authorIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+          description: IDs of existing authors to associate
+          example: [1, 2]
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: IDs of existing genres to associate
+          example: [3]
+
+    BookUpdateRequest:
+      description: Payload for fully replacing a book (PUT)
+      type: object
+      required:
+        - title
+        - language
+        - authorIds
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Les Misérables"
+        description:
+          type: string
+          maxLength: 2000
+        language:
+          $ref: '#/components/schemas/Language'
+        authorIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    BookPatchRequest:
+      description: Payload for partially updating a book (PATCH) — all fields optional
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+        language:
+          $ref: '#/components/schemas/Language'
+        authorIds:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            format: int64
+        genreIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    # ── Error ──────────────────────────────────────────────────────────────
+
+    ApiError:
+      description: Standard error envelope
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Book with id 42 was not found"
+        path:
+          type: string
+          example: "/api/v1/books/42"
