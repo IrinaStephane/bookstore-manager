@@ -1,6 +1,8 @@
 package com.hei.school.repository.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +11,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Book {
-  @Id private String id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
   private String title;
-  private String author;
+  private String description;
 }
