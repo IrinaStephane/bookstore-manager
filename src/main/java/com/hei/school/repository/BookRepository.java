@@ -1,7 +1,6 @@
 package com.hei.school.repository;
 
 import com.hei.school.entity.Book;
-import com.hei.school.entity.enums.Language;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,43 +9,99 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-  boolean existsByTitleIgnoreCase(String title);
+  @Query(
+      value = "SELECT COUNT(*) > 0 FROM book WHERE LOWER(title) = LOWER(:title)",
+      nativeQuery = true)
+  boolean existsByTitleIgnoreCase(@Param("title") String title);
 
-  Page<Book> findByLanguage(Language language, Pageable pageable);
+  @Query(
+      value = "SELECT * FROM book WHERE language = :language",
+      countQuery = "SELECT COUNT(*) FROM book WHERE language = :language",
+      nativeQuery = true)
+  Page<Book> findByLanguage(@Param("language") String language, Pageable pageable);
 
-  @Query("SELECT DISTINCT b FROM Book b JOIN b.genres g WHERE g.id = :genreId")
+  @Query(
+      value =
+          "SELECT DISTINCT b.* FROM book b"
+              + " JOIN book_genre bg ON b.id = bg.book_id"
+              + " WHERE bg.genre_id = :genreId",
+      countQuery =
+          "SELECT COUNT(DISTINCT b.id) FROM book b"
+              + " JOIN book_genre bg ON b.id = bg.book_id"
+              + " WHERE bg.genre_id = :genreId",
+      nativeQuery = true)
   Page<Book> findByGenreId(@Param("genreId") Long genreId, Pageable pageable);
 
-  @Query("SELECT DISTINCT b FROM Book b JOIN b.authors a WHERE a.id = :authorId")
+  @Query(
+      value =
+          "SELECT DISTINCT b.* FROM book b"
+              + " JOIN book_author ba ON b.id = ba.book_id"
+              + " WHERE ba.author_id = :authorId",
+      countQuery =
+          "SELECT COUNT(DISTINCT b.id) FROM book b"
+              + " JOIN book_author ba ON b.id = ba.book_id"
+              + " WHERE ba.author_id = :authorId",
+      nativeQuery = true)
   Page<Book> findByAuthorId(@Param("authorId") Long authorId, Pageable pageable);
 
   @Query(
-      "SELECT b FROM Book b"
-          + " WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
-          + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%'))")
+      value =
+          "SELECT * FROM book"
+              + " WHERE LOWER(title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(description) LIKE LOWER(CONCAT('%', :search, '%'))",
+      countQuery =
+          "SELECT COUNT(*) FROM book"
+              + " WHERE LOWER(title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(description) LIKE LOWER(CONCAT('%', :search, '%'))",
+      nativeQuery = true)
   Page<Book> searchByTitleOrDescription(@Param("search") String search, Pageable pageable);
 
   @Query(
-      "SELECT b FROM Book b"
-          + " WHERE b.language = :language"
-          + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
-          + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))")
+      value =
+          "SELECT * FROM book"
+              + " WHERE language = :language"
+              + " AND (LOWER(title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(description) LIKE LOWER(CONCAT('%', :search, '%')))",
+      countQuery =
+          "SELECT COUNT(*) FROM book"
+              + " WHERE language = :language"
+              + " AND (LOWER(title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(description) LIKE LOWER(CONCAT('%', :search, '%')))",
+      nativeQuery = true)
   Page<Book> findByLanguageAndSearch(
-      @Param("language") Language language, @Param("search") String search, Pageable pageable);
+      @Param("language") String language, @Param("search") String search, Pageable pageable);
 
   @Query(
-      "SELECT DISTINCT b FROM Book b JOIN b.genres g"
-          + " WHERE g.id = :genreId"
-          + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
-          + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))")
+      value =
+          "SELECT DISTINCT b.* FROM book b"
+              + " JOIN book_genre bg ON b.id = bg.book_id"
+              + " WHERE bg.genre_id = :genreId"
+              + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))",
+      countQuery =
+          "SELECT COUNT(DISTINCT b.id) FROM book b"
+              + " JOIN book_genre bg ON b.id = bg.book_id"
+              + " WHERE bg.genre_id = :genreId"
+              + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))",
+      nativeQuery = true)
   Page<Book> findByGenreIdAndSearch(
       @Param("genreId") Long genreId, @Param("search") String search, Pageable pageable);
 
   @Query(
-      "SELECT DISTINCT b FROM Book b JOIN b.authors a"
-          + " WHERE a.id = :authorId"
-          + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
-          + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))")
+      value =
+          "SELECT DISTINCT b.* FROM book b"
+              + " JOIN book_author ba ON b.id = ba.book_id"
+              + " WHERE ba.author_id = :authorId"
+              + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))",
+      countQuery =
+          "SELECT COUNT(DISTINCT b.id) FROM book b"
+              + " JOIN book_author ba ON b.id = ba.book_id"
+              + " WHERE ba.author_id = :authorId"
+              + " AND (LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))"
+              + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))",
+      nativeQuery = true)
   Page<Book> findByAuthorIdAndSearch(
       @Param("authorId") Long authorId, @Param("search") String search, Pageable pageable);
 }
