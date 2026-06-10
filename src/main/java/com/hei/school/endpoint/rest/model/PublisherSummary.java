@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class PublisherSummary {
-    private Long id;
-    private String name;
-    private String country;
+  private Long id;
+  private String name;
+  private String country;
 }

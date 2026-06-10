@@ -18,18 +18,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class BookCreateRequest {
-    @NotBlank(message = "title is mandatory")
-    @Size(max = 255)
-    private String title;
+  @NotBlank(message = "title is mandatory")
+  @Size(max = 255)
+  private String title;
 
-    @Size(max = 2000)
-    private String description;
+  @Size(max = 2000)
+  private String description;
 
-    @NotNull(message = "language is mandatory")
-    private Language language;
+  @NotNull(message = "language is mandatory")
+  private Language language;
 
-    @NotEmpty(message = "at least one authorId is required")
-    private List<Long> authorIds;
+  @NotEmpty(message = "at least one authorId is required")
+  private List<Long> authorIds;
 
-    private List<Long> genreIds;
+  private List<Long> genreIds;
 }

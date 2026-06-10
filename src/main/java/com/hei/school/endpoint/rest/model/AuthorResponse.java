@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class AuthorResponse {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String bio;
+  private Long id;
+  private String firstName;
+  private String lastName;
+  private String bio;
 }

@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class BookEditionResponse {
-    private Long id;
-    private String isbn;
-    private BookFormat format;
-    private Double sellingPrice;
-    private LocalDate publishedDate;
-    private String coverImageUrl;
-    private BookCondition condition;
-    private Integer quantityInStock;
-    private Integer totalReceived;
-    private Integer totalSold;
-    private PublisherSummary publisher;
+  private Long id;
+  private String isbn;
+  private BookFormat format;
+  private Double sellingPrice;
+  private LocalDate publishedDate;
+  private String coverImageUrl;
+  private BookCondition condition;
+  private Integer quantityInStock;
+  private Integer totalReceived;
+  private Integer totalSold;
+  private PublisherSummary publisher;
 }

@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class ReviewResponse {
-    private Long id;
-    private Integer rating;
-    private String comment;
-    private Instant createdAt;
-    private Long userId;
+  private Long id;
+  private Integer rating;
+  private String comment;
+  private Instant createdAt;
+  private Long userId;
 }

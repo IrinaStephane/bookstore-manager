@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class BookResponse {
-    private Long id;
-    private String title;
-    private String description;
-    private Language language;
-    private List<AuthorSummary> authors;
-    private List<GenreSummary> genres;
-    private List<BookEditionResponse> editions;
-    private List<ReviewResponse> reviews;
+  private Long id;
+  private String title;
+  private String description;
+  private Language language;
+  private List<AuthorSummary> authors;
+  private List<GenreSummary> genres;
+  private List<BookEditionResponse> editions;
+  private List<ReviewResponse> reviews;
 }

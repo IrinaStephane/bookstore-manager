@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class GenreSummary {
-    private Long id;
-    private String name;
+  private Long id;
+  private String name;
 }
