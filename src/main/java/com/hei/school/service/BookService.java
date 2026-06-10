@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
-  /** GET /books — liste paginée avec filtres optionnels */
   Page<BookResponse> getAllBooks(
       Language language, Long genreId, Long authorId, String search, Pageable pageable);
 
