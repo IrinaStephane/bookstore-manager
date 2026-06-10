@@ -1,4 +1,4 @@
-package com.hei.school.endpoint.rest.controller;
+package com.hei.school.endpoint.rest.controller.Book;
 
 import com.hei.school.PojaGenerated;
 import com.hei.school.endpoint.rest.model.BookCreateRequest;
@@ -8,6 +8,7 @@ import com.hei.school.endpoint.rest.model.BookUpdateRequest;
 import com.hei.school.entity.enums.Language;
 import com.hei.school.service.BookService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,15 +37,15 @@ public class BookController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false) Language language,
-      @RequestParam(required = false) Long genreId,
-      @RequestParam(required = false) Long authorId,
+      @RequestParam(required = false) UUID genreId,
+      @RequestParam(required = false) UUID authorId,
       @RequestParam(required = false) String search) {
     Pageable pageable = PageRequest.of(page, size);
     return bookService.getAllBooks(language, genreId, authorId, search, pageable);
   }
 
   @GetMapping("/books/{id}")
-  public BookResponse getBookById(@PathVariable Long id) {
+  public BookResponse getBookById(@PathVariable UUID id) {
     return bookService.getBookById(id);
   }
 
@@ -55,17 +56,17 @@ public class BookController {
 
   @PutMapping("/books/{id}")
   public BookResponse updateBook(
-      @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {
+      @PathVariable UUID id, @Valid @RequestBody BookUpdateRequest request) {
     return bookService.updateBook(id, request);
   }
 
   @PatchMapping("/books/{id}")
-  public BookResponse patchBook(@PathVariable Long id, @RequestBody BookPatchRequest request) {
+  public BookResponse patchBook(@PathVariable UUID id, @RequestBody BookPatchRequest request) {
     return bookService.patchBook(id, request);
   }
 
   @DeleteMapping("/books/{id}")
-  public void deleteBook(@PathVariable Long id) {
+  public void deleteBook(@PathVariable UUID id) {
     bookService.deleteBook(id);
   }
 }

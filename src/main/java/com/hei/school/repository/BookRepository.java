@@ -1,13 +1,14 @@
 package com.hei.school.repository;
 
 import com.hei.school.entity.Book;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, UUID> {
 
   @Query(
       value = "SELECT COUNT(*) > 0 FROM book WHERE LOWER(title) = LOWER(:title)",
@@ -30,7 +31,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
               + " JOIN book_genre bg ON b.id = bg.book_id"
               + " WHERE bg.genre_id = :genreId",
       nativeQuery = true)
-  Page<Book> findByGenreId(@Param("genreId") Long genreId, Pageable pageable);
+  Page<Book> findByGenreId(@Param("genreId") UUID genreId, Pageable pageable);
 
   @Query(
       value =
@@ -42,7 +43,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
               + " JOIN book_author ba ON b.id = ba.book_id"
               + " WHERE ba.author_id = :authorId",
       nativeQuery = true)
-  Page<Book> findByAuthorId(@Param("authorId") Long authorId, Pageable pageable);
+  Page<Book> findByAuthorId(@Param("authorId") UUID authorId, Pageable pageable);
 
   @Query(
       value =
@@ -86,7 +87,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
               + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))",
       nativeQuery = true)
   Page<Book> findByGenreIdAndSearch(
-      @Param("genreId") Long genreId, @Param("search") String search, Pageable pageable);
+      @Param("genreId") UUID genreId, @Param("search") String search, Pageable pageable);
 
   @Query(
       value =
@@ -103,5 +104,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
               + " OR LOWER(b.description) LIKE LOWER(CONCAT('%', :search, '%')))",
       nativeQuery = true)
   Page<Book> findByAuthorIdAndSearch(
-      @Param("authorId") Long authorId, @Param("search") String search, Pageable pageable);
+      @Param("authorId") UUID authorId, @Param("search") String search, Pageable pageable);
 }

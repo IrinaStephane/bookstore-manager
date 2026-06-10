@@ -15,6 +15,7 @@ import com.hei.school.repository.AuthorRepository;
 import com.hei.school.repository.BookRepository;
 import com.hei.school.repository.GenreRepository;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,7 @@ public class BookServiceImpl implements BookService {
 
   @Override
   public Page<BookResponse> getAllBooks(
-      Language language, Long genreId, Long authorId, String search, Pageable pageable) {
+      Language language, UUID genreId, UUID authorId, String search, Pageable pageable) {
 
     boolean hasSearch = search != null && !search.isBlank();
     boolean hasLanguage = language != null;
@@ -66,7 +67,7 @@ public class BookServiceImpl implements BookService {
   }
 
   @Override
-  public BookResponse getBookById(Long id) {
+  public BookResponse getBookById(UUID id) {
     return bookMapper.toResponse(findBookOrThrow(id));
   }
 
@@ -86,7 +87,7 @@ public class BookServiceImpl implements BookService {
 
   @Override
   @Transactional
-  public BookResponse updateBook(Long id, BookUpdateRequest request) {
+  public BookResponse updateBook(UUID id, BookUpdateRequest request) {
     Book book = findBookOrThrow(id);
 
     book.setTitle(request.getTitle());
@@ -100,7 +101,7 @@ public class BookServiceImpl implements BookService {
 
   @Override
   @Transactional
-  public BookResponse patchBook(Long id, BookPatchRequest request) {
+  public BookResponse patchBook(UUID id, BookPatchRequest request) {
     Book book = findBookOrThrow(id);
 
     if (request.getTitle() != null) {
@@ -124,18 +125,18 @@ public class BookServiceImpl implements BookService {
 
   @Override
   @Transactional
-  public void deleteBook(Long id) {
+  public void deleteBook(UUID id) {
     if (!bookRepository.existsById(id)) {
       throw new BookNotFoundException(id);
     }
     bookRepository.deleteById(id);
   }
 
-  private Book findBookOrThrow(Long id) {
+  private Book findBookOrThrow(UUID id) {
     return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
   }
 
-  private List<Author> resolveAuthors(List<Long> ids) {
+  private List<Author> resolveAuthors(List<UUID> ids) {
     if (ids == null || ids.isEmpty()) return List.of();
     return ids.stream()
         .map(
@@ -148,7 +149,7 @@ public class BookServiceImpl implements BookService {
         .toList();
   }
 
-  private List<Genre> resolveGenres(List<Long> ids) {
+  private List<Genre> resolveGenres(List<UUID> ids) {
     if (ids == null || ids.isEmpty()) return List.of();
     return ids.stream()
         .map(

@@ -3,6 +3,7 @@ package com.hei.school.endpoint.rest.model;
 import com.hei.school.PojaGenerated;
 import com.hei.school.entity.enums.Language;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class BookResponse {
-  private Long id;
+  private UUID id;
   private String title;
   private String description;
   private Language language;

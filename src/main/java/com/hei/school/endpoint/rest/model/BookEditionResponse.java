@@ -4,6 +4,7 @@ import com.hei.school.PojaGenerated;
 import com.hei.school.entity.enums.BookCondition;
 import com.hei.school.entity.enums.BookFormat;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class BookEditionResponse {
-  private Long id;
+  private UUID id;
   private String isbn;
   private BookFormat format;
   private Double sellingPrice;

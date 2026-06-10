@@ -4,7 +4,9 @@ import com.hei.school.entity.enums.Language;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "book")
@@ -15,8 +17,10 @@ import lombok.*;
 public class Book {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+  private UUID id;
 
   @Column(nullable = false, length = 255)
   private String title;
