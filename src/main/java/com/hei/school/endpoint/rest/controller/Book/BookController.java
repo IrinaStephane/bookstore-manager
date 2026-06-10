@@ -44,14 +44,11 @@ public class BookController {
 
   @PutMapping("/books/{id}")
   public BookResponse updateBook(
-      @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {
-  }
+      @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {}
 
   @PatchMapping("/books/{id}")
-  public BookResponse patchBook(@PathVariable Long id, @RequestBody BookPatchRequest request) {
-  }
+  public BookResponse patchBook(@PathVariable Long id, @RequestBody BookPatchRequest request) {}
 
   @DeleteMapping("/books/{id}")
-  public void deleteBook(@PathVariable Long id) {
-  }
+  public void deleteBook(@PathVariable Long id) {}
 }
