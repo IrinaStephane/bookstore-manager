@@ -2,6 +2,7 @@ package com.hei.school.endpoint.rest.mapper;
 
 import com.hei.school.PojaGenerated;
 import com.hei.school.endpoint.rest.model.AuthorSummary;
+import com.hei.school.endpoint.rest.model.BookCreateRequest;
 import com.hei.school.endpoint.rest.model.BookResponse;
 import com.hei.school.endpoint.rest.model.GenreSummary;
 import com.hei.school.entity.Author;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @PojaGenerated
 public class BookMapper {
 
-  public BookResponse toRest(Book domain) {
+  public BookResponse toResponse(Book domain) {
     return BookResponse.builder()
         .id(domain.getId())
         .title(domain.getTitle())
@@ -24,6 +25,14 @@ public class BookMapper {
             domain.getAuthors().stream().map(this::toAuthorSummary).collect(Collectors.toList()))
         .genres(domain.getGenres().stream().map(this::toGenreSummary).collect(Collectors.toList()))
         .build();
+  }
+
+  public Book toEntity(BookCreateRequest request) {
+    Book book = new Book();
+    book.setTitle(request.getTitle());
+    book.setDescription(request.getDescription());
+    book.setLanguage(request.getLanguage());
+    return book;
   }
 
   private AuthorSummary toAuthorSummary(Author author) {
