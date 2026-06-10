@@ -8,6 +8,8 @@ import com.hei.school.service.BookService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,32 +28,33 @@ public class BookController {
       @RequestParam(required = false) Long authorId,
       @RequestParam(required = false) Long genreId,
       @RequestParam(required = false) String search) {
-    return service.getAllBooks(page, size, language, authorId, genreId, search).map(mapper::toRest);
+    Pageable pageable = PageRequest.of(page, size);
+    return service.getAllBooks(language, authorId, genreId, search, pageable).map(mapper::toRest);
   }
 
   @GetMapping("/books/{id}")
   public BookResponse getBookById(@PathVariable Long id) {
-    return mapper.toRest(service.getById(id));
+    return mapper.toRest(service.findById(id));
   }
 
   @PostMapping("/books")
   public BookResponse createBook(@Valid @RequestBody BookCreateRequest request) {
-    return mapper.toRest(service.save(request));
+    return mapper.toRest(service.save(mapper.toDomain(request)));
   }
 
   @PutMapping("/books/{id}")
   public BookResponse updateBook(
       @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {
-    return mapper.toRest(service.update(id, request));
+    return mapper.toRest(service.update(mapper.toDomain(request)));
   }
 
   @PatchMapping("/books/{id}")
   public BookResponse patchBook(@PathVariable Long id, @RequestBody BookPatchRequest request) {
-    return mapper.toRest(service.patch(id, request));
+    return mapper.toRest(service.patch(mapper.toDomain(request)));
   }
 
   @DeleteMapping("/books/{id}")
   public void deleteBook(@PathVariable Long id) {
-    service.delete(id);
+    service.deleteById(id);
   }
 }
