@@ -45,16 +45,13 @@ public class BookController {
   @PutMapping("/books/{id}")
   public BookResponse updateBook(
       @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {
-    return mapper.toRest(service.update(mapper.toDomain(request)));
   }
 
   @PatchMapping("/books/{id}")
   public BookResponse patchBook(@PathVariable Long id, @RequestBody BookPatchRequest request) {
-    return mapper.toRest(service.patch(mapper.toDomain(request)));
   }
 
   @DeleteMapping("/books/{id}")
   public void deleteBook(@PathVariable Long id) {
-    service.deleteById(id);
   }
 }
