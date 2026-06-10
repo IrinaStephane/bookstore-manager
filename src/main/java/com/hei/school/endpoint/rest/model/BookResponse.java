@@ -1,9 +1,9 @@
 package com.hei.school.endpoint.rest.model;
 
 import com.hei.school.PojaGenerated;
-import java.util.UUID;
 import com.hei.school.entity.enums.Language;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
