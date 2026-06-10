@@ -11,15 +11,20 @@ import org.springframework.data.domain.Pageable;
 public interface BookService {
 
   Page<BookResponse> getAllBooks(
-      Language language, Long genreId, Long authorId, String search, Pageable pageable);
+          Language language, Long genreId, Long authorId, String search, Pageable pageable);
+
 
   BookResponse getBookById(Long id);
 
+
   BookResponse createBook(BookCreateRequest request);
+
 
   BookResponse updateBook(Long id, BookUpdateRequest request);
 
+
   BookResponse patchBook(Long id, BookPatchRequest request);
+
 
   void deleteBook(Long id);
 }
