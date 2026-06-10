@@ -31,10 +31,9 @@ public class BookServiceImpl implements BookService {
   private final GenreRepository genreRepository;
   private final BookMapper bookMapper;
 
-
   @Override
   public Page<BookResponse> getAllBooks(
-          Language language, Long genreId, Long authorId, String search, Pageable pageable) {
+      Language language, Long genreId, Long authorId, String search, Pageable pageable) {
 
     boolean hasSearch = search != null && !search.isBlank();
     boolean hasLanguage = language != null;
@@ -66,12 +65,10 @@ public class BookServiceImpl implements BookService {
     return page.map(bookMapper::toResponse);
   }
 
-
   @Override
   public BookResponse getBookById(Long id) {
     return bookMapper.toResponse(findBookOrThrow(id));
   }
-
 
   @Override
   @Transactional
@@ -87,7 +84,6 @@ public class BookServiceImpl implements BookService {
     return bookMapper.toResponse(bookRepository.save(book));
   }
 
-
   @Override
   @Transactional
   public BookResponse updateBook(Long id, BookUpdateRequest request) {
@@ -101,7 +97,6 @@ public class BookServiceImpl implements BookService {
 
     return bookMapper.toResponse(bookRepository.save(book));
   }
-
 
   @Override
   @Transactional
@@ -127,7 +122,6 @@ public class BookServiceImpl implements BookService {
     return bookMapper.toResponse(bookRepository.save(book));
   }
 
-
   @Override
   @Transactional
   public void deleteBook(Long id) {
@@ -137,7 +131,6 @@ public class BookServiceImpl implements BookService {
     bookRepository.deleteById(id);
   }
 
-
   private Book findBookOrThrow(Long id) {
     return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
   }
@@ -145,28 +138,25 @@ public class BookServiceImpl implements BookService {
   private List<Author> resolveAuthors(List<Long> ids) {
     if (ids == null || ids.isEmpty()) return List.of();
     return ids.stream()
-            .map(
-                    authorId ->
-                            authorRepository
-                                    .findById(authorId)
-                                    .orElseThrow(
-                                            () ->
-                                                    new RuntimeException(
-                                                            "Author with id " + authorId + " was not found")))
-            .toList();
+        .map(
+            authorId ->
+                authorRepository
+                    .findById(authorId)
+                    .orElseThrow(
+                        () ->
+                            new RuntimeException("Author with id " + authorId + " was not found")))
+        .toList();
   }
 
   private List<Genre> resolveGenres(List<Long> ids) {
     if (ids == null || ids.isEmpty()) return List.of();
     return ids.stream()
-            .map(
-                    genreId ->
-                            genreRepository
-                                    .findById(genreId)
-                                    .orElseThrow(
-                                            () ->
-                                                    new RuntimeException(
-                                                            "Genre with id " + genreId + " was not found")))
-            .toList();
+        .map(
+            genreId ->
+                genreRepository
+                    .findById(genreId)
+                    .orElseThrow(
+                        () -> new RuntimeException("Genre with id " + genreId + " was not found")))
+        .toList();
   }
 }

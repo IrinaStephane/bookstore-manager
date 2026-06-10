@@ -8,7 +8,6 @@ import com.hei.school.endpoint.rest.model.GenreSummary;
 import com.hei.school.entity.Author;
 import com.hei.school.entity.Book;
 import com.hei.school.entity.Genre;
-import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -18,19 +17,14 @@ public class BookMapper {
 
   public BookResponse toResponse(Book domain) {
     return BookResponse.builder()
-            .id(domain.getId())
-            .title(domain.getTitle())
-            .description(domain.getDescription())
-            .language(domain.getLanguage())
-            .authors(
-                    domain.getAuthors().stream()
-                            .map(this::toAuthorSummary)
-                            .collect(Collectors.toList()))
-            .genres(
-                    domain.getGenres().stream()
-                            .map(this::toGenreSummary)
-                            .collect(Collectors.toList()))
-            .build();
+        .id(domain.getId())
+        .title(domain.getTitle())
+        .description(domain.getDescription())
+        .language(domain.getLanguage())
+        .authors(
+            domain.getAuthors().stream().map(this::toAuthorSummary).collect(Collectors.toList()))
+        .genres(domain.getGenres().stream().map(this::toGenreSummary).collect(Collectors.toList()))
+        .build();
   }
 
   public Book toEntity(BookCreateRequest request) {
@@ -43,16 +37,13 @@ public class BookMapper {
 
   private AuthorSummary toAuthorSummary(Author author) {
     return AuthorSummary.builder()
-            .id(author.getId())
-            .firstName(author.getFirstName())
-            .lastName(author.getLastName())
-            .build();
+        .id(author.getId())
+        .firstName(author.getFirstName())
+        .lastName(author.getLastName())
+        .build();
   }
 
   private GenreSummary toGenreSummary(Genre genre) {
-    return GenreSummary.builder()
-            .id(genre.getId())
-            .name(genre.getName())
-            .build();
+    return GenreSummary.builder().id(genre.getId()).name(genre.getName()).build();
   }
 }

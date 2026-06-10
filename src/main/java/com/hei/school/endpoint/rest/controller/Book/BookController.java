@@ -33,12 +33,12 @@ public class BookController {
 
   @GetMapping("/books")
   public Page<BookResponse> getAllBooks(
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "20") int size,
-          @RequestParam(required = false) Language language,
-          @RequestParam(required = false) Long genreId,
-          @RequestParam(required = false) Long authorId,
-          @RequestParam(required = false) String search) {
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(required = false) Language language,
+      @RequestParam(required = false) Long genreId,
+      @RequestParam(required = false) Long authorId,
+      @RequestParam(required = false) String search) {
     Pageable pageable = PageRequest.of(page, size);
     return bookService.getAllBooks(language, genreId, authorId, search, pageable);
   }
@@ -55,13 +55,12 @@ public class BookController {
 
   @PutMapping("/books/{id}")
   public BookResponse updateBook(
-          @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {
+      @PathVariable Long id, @Valid @RequestBody BookUpdateRequest request) {
     return bookService.updateBook(id, request);
   }
 
   @PatchMapping("/books/{id}")
-  public BookResponse patchBook(
-          @PathVariable Long id, @RequestBody BookPatchRequest request) {
+  public BookResponse patchBook(@PathVariable Long id, @RequestBody BookPatchRequest request) {
     return bookService.patchBook(id, request);
   }
 
