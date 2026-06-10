@@ -9,9 +9,9 @@ import lombok.Data;
 
 @Data
 public class BookUpdateRequest {
-    @NotBlank private String title;
-    private String description;
-    @NotNull private Language language;
-    @NotEmpty private List<Long> authorIds;
-    private List<Long> genreIds;
+  @NotBlank private String title;
+  private String description;
+  @NotNull private Language language;
+  @NotEmpty private List<Long> authorIds;
+  private List<Long> genreIds;
 }

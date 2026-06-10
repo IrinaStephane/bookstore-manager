@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class BookPatchRequest {
-    private String title;
-    private String description;
-    private Language language;
-    private List<Long> authorIds;
-    private List<Long> genreIds;
+  private String title;
+  private String description;
+  private Language language;
+  private List<Long> authorIds;
+  private List<Long> genreIds;
 }
