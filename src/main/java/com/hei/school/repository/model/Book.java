@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +18,6 @@ public class Book {
   private Long id;
   private String title;
   private String description;
+@Enumerated(EnumType.STRING)
+  private Language language;
 }
