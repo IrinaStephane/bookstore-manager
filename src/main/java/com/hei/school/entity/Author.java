@@ -1,7 +1,9 @@
 package com.hei.school.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "author")
@@ -12,8 +14,10 @@ import lombok.*;
 public class Author {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+  private UUID id;
 
   @Column(nullable = false)
   private String firstName;

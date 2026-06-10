@@ -1,8 +1,10 @@
 package com.hei.school.exception;
 
+import java.util.UUID;
+
 public class BookNotFoundException extends RuntimeException {
 
-  public BookNotFoundException(Long id) {
+  public BookNotFoundException(UUID id) {
     super("Book with id " + id + " was not found");
   }
 

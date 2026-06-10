@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class BookCreateRequest {
   private Language language;
 
   @NotEmpty(message = "at least one authorId is required")
-  private List<Long> authorIds;
+  private List<UUID> authorIds;
 
-  private List<Long> genreIds;
+  private List<UUID> genreIds;
 }

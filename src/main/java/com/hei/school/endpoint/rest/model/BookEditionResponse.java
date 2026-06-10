@@ -1,6 +1,7 @@
 package com.hei.school.endpoint.rest.model;
 
 import com.hei.school.PojaGenerated;
+import java.util.UUID;
 import com.hei.school.entity.enums.BookCondition;
 import com.hei.school.entity.enums.BookFormat;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @PojaGenerated
 public class BookEditionResponse {
-  private Long id;
+  private UUID id;
   private String isbn;
   private BookFormat format;
   private Double sellingPrice;

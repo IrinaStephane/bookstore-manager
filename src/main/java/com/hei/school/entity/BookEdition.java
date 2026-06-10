@@ -4,7 +4,9 @@ import com.hei.school.entity.enums.BookCondition;
 import com.hei.school.entity.enums.BookFormat;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "book_edition")
@@ -15,8 +17,10 @@ import lombok.*;
 public class BookEdition {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+  private UUID id;
 
   @Column(unique = true, length = 20)
   private String isbn;
