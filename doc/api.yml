@@ -12,7 +12,7 @@ info:
     name: Library Dev Team
 
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost:8080
     description: Local development server
 
 tags:
@@ -841,4 +841,4 @@ components:
           example: "Book with id 42 was not found"
         path:
           type: string
-          example: "/api/v1/books/42"
+          example: "/books/42"
