@@ -36,7 +36,8 @@ public class BookEditionMapper {
     edition.setPublishedDate(request.getPublishedDate());
     edition.setCoverImageUrl(request.getCoverImageUrl());
     edition.setCondition(request.getCondition());
-    edition.setQuantityInStock(request.getQuantityInStock() == null ? 0 : request.getQuantityInStock());
+    edition.setQuantityInStock(
+        request.getQuantityInStock() == null ? 0 : request.getQuantityInStock());
     return edition;
   }
 
