@@ -53,7 +53,7 @@ public class SaleServiceImpl implements SaleService {
 
       SaleItem item = new SaleItem();
       item.setQuantity(itemReq.getQuantity());
-      item.setUnitPrice(itemReq.getUnitPrice());
+      item.setUnitPrice(edition.getSellingPrice());
       item.setEdition(edition);
       item.setSale(sale);
 

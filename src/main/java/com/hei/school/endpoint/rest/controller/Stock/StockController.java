@@ -1,7 +1,9 @@
 package com.hei.school.endpoint.rest.controller.Stock;
 
 import com.hei.school.endpoint.rest.model.StockResponse;
-import com.hei.school.service.BookEditionService;
+import com.hei.school.entity.BookEdition;
+import com.hei.school.exception.BookEditionNotFoundException;
+import com.hei.school.repository.BookEditionRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class StockController {
 
-  private final BookEditionService bookEditionService;
+  private final BookEditionRepository bookEditionRepository;
+  private final com.hei.school.service.BookEditionService bookEditionService;
 
   @GetMapping("/books/{bookId}/editions/{editionId}/stock")
   public StockResponse getEditionStock(
       @PathVariable UUID bookId, @PathVariable UUID editionId) {
-    Integer quantity = bookEditionService.getEditionStock(bookId, editionId);
-    return new StockResponse(editionId, null, quantity);
+    BookEdition edition = findEdition(bookId, editionId);
+    return new StockResponse(editionId, edition.getIsbn(), edition.getQuantityInStock());
   }
 
   @GetMapping("/books/{bookId}/stock")
@@ -34,6 +37,16 @@ public class StockController {
       @PathVariable UUID editionId,
       @RequestBody Integer quantity) {
     bookEditionService.updateEditionStock(bookId, editionId, quantity);
-    return new StockResponse(editionId, null, quantity);
+    BookEdition edition = findEdition(bookId, editionId);
+    return new StockResponse(editionId, edition.getIsbn(), quantity);
+  }
+
+  private BookEdition findEdition(UUID bookId, UUID editionId) {
+    BookEdition edition = bookEditionRepository.findById(editionId)
+        .orElseThrow(() -> new BookEditionNotFoundException(editionId));
+    if (!edition.getBook().getId().equals(bookId)) {
+      throw new BookEditionNotFoundException(editionId);
+    }
+    return edition;
   }
 }

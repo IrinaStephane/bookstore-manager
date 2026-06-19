@@ -19,8 +19,4 @@ public class SaleItemRequest {
   @NotNull(message = "quantity is mandatory")
   @Positive(message = "quantity must be positive")
   private Integer quantity;
-
-  @NotNull(message = "unitPrice is mandatory")
-  @Positive(message = "unitPrice must be positive")
-  private Double unitPrice;
 }
