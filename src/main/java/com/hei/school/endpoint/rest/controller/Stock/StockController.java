@@ -20,8 +20,7 @@ public class StockController {
   private final com.hei.school.service.BookEditionService bookEditionService;
 
   @GetMapping("/books/{bookId}/editions/{editionId}/stock")
-  public StockResponse getEditionStock(
-      @PathVariable UUID bookId, @PathVariable UUID editionId) {
+  public StockResponse getEditionStock(@PathVariable UUID bookId, @PathVariable UUID editionId) {
     BookEdition edition = findEdition(bookId, editionId);
     return new StockResponse(editionId, edition.getIsbn(), edition.getQuantityInStock());
   }
@@ -33,17 +32,17 @@ public class StockController {
 
   @PatchMapping("/books/{bookId}/editions/{editionId}/stock")
   public StockResponse updateEditionStock(
-      @PathVariable UUID bookId,
-      @PathVariable UUID editionId,
-      @RequestBody Integer quantity) {
+      @PathVariable UUID bookId, @PathVariable UUID editionId, @RequestBody Integer quantity) {
     bookEditionService.updateEditionStock(bookId, editionId, quantity);
     BookEdition edition = findEdition(bookId, editionId);
     return new StockResponse(editionId, edition.getIsbn(), quantity);
   }
 
   private BookEdition findEdition(UUID bookId, UUID editionId) {
-    BookEdition edition = bookEditionRepository.findById(editionId)
-        .orElseThrow(() -> new BookEditionNotFoundException(editionId));
+    BookEdition edition =
+        bookEditionRepository
+            .findById(editionId)
+            .orElseThrow(() -> new BookEditionNotFoundException(editionId));
     if (!edition.getBook().getId().equals(bookId)) {
       throw new BookEditionNotFoundException(editionId);
     }

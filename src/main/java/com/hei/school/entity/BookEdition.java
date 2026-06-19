@@ -33,8 +33,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 public class BookEdition {
 
-  @Id @GeneratedValue @UuidGenerator
-  private UUID id;
+  @Id @GeneratedValue @UuidGenerator private UUID id;
 
   @Column(unique = true, length = 20)
   private String isbn;

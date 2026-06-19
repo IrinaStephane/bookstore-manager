@@ -50,11 +50,12 @@ public class BookEditionServiceImpl implements BookEditionService {
     edition.setPublisher(resolvePublisher(request.getPublisherId()));
     edition = bookEditionRepository.save(edition);
 
-    PriceHistory history = PriceHistory.builder()
-        .edition(edition)
-        .price(edition.getSellingPrice())
-        .effectiveDate(LocalDate.now())
-        .build();
+    PriceHistory history =
+        PriceHistory.builder()
+            .edition(edition)
+            .price(edition.getSellingPrice())
+            .effectiveDate(LocalDate.now())
+            .build();
     priceHistoryRepository.save(history);
 
     return bookEditionMapper.toResponse(edition);
@@ -81,11 +82,12 @@ public class BookEditionServiceImpl implements BookEditionService {
     Double newPrice = request.getSellingPrice();
     if (!newPrice.equals(oldPrice)) {
       edition.setSellingPrice(newPrice);
-      PriceHistory history = PriceHistory.builder()
-          .edition(edition)
-          .price(newPrice)
-          .effectiveDate(LocalDate.now())
-          .build();
+      PriceHistory history =
+          PriceHistory.builder()
+              .edition(edition)
+              .price(newPrice)
+              .effectiveDate(LocalDate.now())
+              .build();
       priceHistoryRepository.save(history);
     }
 
