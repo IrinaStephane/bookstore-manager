@@ -38,9 +38,8 @@ public class Sale {
   @Column(nullable = false, length = 20)
   private SaleStatus status;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @Column(name = "user_id", nullable = false)
+  private UUID userId;
 
   @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<SaleItem> items = new ArrayList<>();

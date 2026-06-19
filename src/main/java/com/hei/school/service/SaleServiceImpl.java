@@ -7,12 +7,10 @@ import com.hei.school.endpoint.rest.model.SaleResponse;
 import com.hei.school.entity.BookEdition;
 import com.hei.school.entity.Sale;
 import com.hei.school.entity.SaleItem;
-import com.hei.school.entity.User;
 import com.hei.school.entity.enums.SaleStatus;
 import com.hei.school.exception.ResourceNotFoundException;
 import com.hei.school.repository.BookEditionRepository;
 import com.hei.school.repository.SaleRepository;
-import com.hei.school.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SaleServiceImpl implements SaleService {
 
   private final SaleRepository saleRepository;
-  private final UserRepository userRepository;
   private final BookEditionRepository bookEditionRepository;
 
   @Transactional
   public SaleResponse createSale(SaleRequest request) {
-    User user =
-        userRepository
-            .findById(request.getUserId())
-            .orElseThrow(
-                () -> new ResourceNotFoundException("User with id " + request.getUserId() + " not found"));
-
     Sale sale = new Sale();
-    sale.setUser(user);
+    sale.setUserId(request.getUserId());
     sale.setPaymentMethod(request.getPaymentMethod());
     sale.setStatus(SaleStatus.CONFIRMED);
 
@@ -99,7 +90,7 @@ public class SaleServiceImpl implements SaleService {
         .totalAmount(sale.getTotalAmount())
         .paymentMethod(sale.getPaymentMethod())
         .status(sale.getStatus())
-        .userId(sale.getUser().getId())
+        .userId(sale.getUserId())
         .items(itemResponses)
         .build();
   }

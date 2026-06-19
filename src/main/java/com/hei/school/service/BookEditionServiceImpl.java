@@ -77,6 +77,30 @@ public class BookEditionServiceImpl implements BookEditionService {
     bookEditionRepository.delete(edition);
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public Integer getEditionStock(UUID bookId, UUID editionId) {
+    BookEdition edition = findEditionOrThrow(bookId, editionId);
+    return edition.getQuantityInStock();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Integer getTotalBookStock(UUID bookId) {
+    ensureBookExists(bookId);
+    return bookEditionRepository.findByBookId(bookId).stream()
+        .mapToInt(BookEdition::getQuantityInStock)
+        .sum();
+  }
+
+  @Override
+  @Transactional
+  public void updateEditionStock(UUID bookId, UUID editionId, Integer quantity) {
+    BookEdition edition = findEditionOrThrow(bookId, editionId);
+    edition.setQuantityInStock(quantity);
+    bookEditionRepository.save(edition);
+  }
+
   private Book findBookOrThrow(UUID bookId) {
     return bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
   }

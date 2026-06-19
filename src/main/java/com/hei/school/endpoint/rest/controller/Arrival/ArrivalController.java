@@ -1,4 +1,4 @@
-package com.hei.school.endpoint.rest.controller;
+package com.hei.school.endpoint.rest.controller.Arrival;
 
 import com.hei.school.endpoint.rest.model.ArrivalRequest;
 import com.hei.school.endpoint.rest.model.ArrivalResponse;

@@ -1,4 +1,4 @@
-package com.hei.school.endpoint.rest.controller;
+package com.hei.school.endpoint.rest.controller.Sale;
 
 import com.hei.school.endpoint.rest.model.SaleRequest;
 import com.hei.school.endpoint.rest.model.SaleResponse;
