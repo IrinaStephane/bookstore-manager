@@ -7,6 +7,12 @@ import java.util.UUID;
 
 public interface BookEditionService {
 
+  Integer getEditionStock(UUID bookId, UUID editionId);
+
+  Integer getTotalBookStock(UUID bookId);
+
+  void updateEditionStock(UUID bookId, UUID editionId, Integer quantity);
+
   List<BookEditionResponse> getEditionsByBookId(UUID bookId);
 
   BookEditionResponse addEdition(UUID bookId, BookEditionCreateRequest request);
