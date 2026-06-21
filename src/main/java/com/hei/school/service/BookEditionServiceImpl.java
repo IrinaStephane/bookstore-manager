@@ -12,7 +12,6 @@ import com.hei.school.exception.BookNotFoundException;
 import com.hei.school.exception.PublisherNotFoundException;
 import com.hei.school.repository.BookEditionRepository;
 import com.hei.school.repository.BookRepository;
-import com.hei.school.repository.PublisherRepository;
 import com.hei.school.repository.PriceHistoryRepository;
 import com.hei.school.repository.PublisherRepository;
 import java.time.LocalDate;
