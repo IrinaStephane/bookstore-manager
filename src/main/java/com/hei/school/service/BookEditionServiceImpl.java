@@ -70,6 +70,7 @@ public class BookEditionServiceImpl implements BookEditionService {
 
     edition.setIsbn(request.getIsbn());
     edition.setFormat(request.getFormat());
+    edition.setSellingPrice(request.getSellingPrice());
     edition.setPublishedDate(request.getPublishedDate());
     edition.setCoverImageUrl(request.getCoverImageUrl());
     edition.setCondition(request.getCondition());
