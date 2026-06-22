@@ -151,7 +151,7 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.2'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
 
-// Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation implementation 'org.springframework.boot:spring-boot-starter-validation:3.3.13'
+implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.2'
 
 
 }
