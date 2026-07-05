@@ -51,7 +51,10 @@ public class SaleServiceImpl implements SaleService {
 
       if (edition.getQuantityInStock() < itemReq.getQuantity()) {
         throw new IllegalArgumentException(
-            "Only " + edition.getQuantityInStock() + " in stock for edition " + itemReq.getEditionId());
+            "Only "
+                + edition.getQuantityInStock()
+                + " in stock for edition "
+                + itemReq.getEditionId());
       }
 
       edition.decrementStock(itemReq.getQuantity());
@@ -73,10 +76,12 @@ public class SaleServiceImpl implements SaleService {
     Sale savedSale = saleRepository.save(sale);
 
     try {
-      eventProducer.accept(List.of(SaleConfirmedEvent.builder()
-          .email(request.getEmail())
-          .saleId(savedSale.getId().toString())
-          .build()));
+      eventProducer.accept(
+          List.of(
+              SaleConfirmedEvent.builder()
+                  .email(request.getEmail())
+                  .saleId(savedSale.getId().toString())
+                  .build()));
     } catch (Exception e) {
       log.warn("Failed to produce SaleConfirmedEvent: {}", e.getMessage());
     }

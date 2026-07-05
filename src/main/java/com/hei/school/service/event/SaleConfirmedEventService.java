@@ -29,7 +29,8 @@ public class SaleConfirmedEventService implements Consumer<SaleConfirmedEvent> {
 
     StringBuilder itemsHtml = new StringBuilder();
     for (SaleItem item : sale.getItems()) {
-      itemsHtml.append("<tr>")
+      itemsHtml
+          .append("<tr>")
           .append("<td style=\"padding:8px;border:1px solid #ddd;\">")
           .append(item.getEdition().getBook().getTitle())
           .append("</td>")
@@ -45,22 +46,26 @@ public class SaleConfirmedEventService implements Consumer<SaleConfirmedEvent> {
           .append("</tr>");
     }
 
-    String htmlBody = "<html><body>"
-        + "<h2>Sale Confirmed</h2>"
-        + "<p>Thank you for your purchase!</p>"
-        + "<table style=\"width:100%;border-collapse:collapse;\">"
-        + "<thead><tr>"
-        + "<th style=\"padding:8px;border:1px solid #ddd;background-color:#f4f4f4;text-align:left;\">Book</th>"
-        + "<th style=\"padding:8px;border:1px solid #ddd;background-color:#f4f4f4;text-align:center;\">Qty</th>"
-        + "<th style=\"padding:8px;border:1px solid #ddd;background-color:#f4f4f4;text-align:right;\">Price</th>"
-        + "<th style=\"padding:8px;border:1px solid #ddd;background-color:#f4f4f4;text-align:right;\">Total</th>"
-        + "</tr></thead><tbody>"
-        + itemsHtml
-        + "</tbody></table>"
-        + "<h3 style=\"text-align:right;\">Total: $" + String.format("%.2f", sale.getTotalAmount()) + "</h3>"
-        + "</body></html>";
+    String htmlBody =
+        "<html><body><h2>Sale Confirmed</h2><p>Thank you for your purchase!</p><table"
+            + " style=\"width:100%;border-collapse:collapse;\"><thead><tr><th"
+            + " style=\"padding:8px;border:1px solid"
+            + " #ddd;background-color:#f4f4f4;text-align:left;\">Book</th><th"
+            + " style=\"padding:8px;border:1px solid"
+            + " #ddd;background-color:#f4f4f4;text-align:center;\">Qty</th><th"
+            + " style=\"padding:8px;border:1px solid"
+            + " #ddd;background-color:#f4f4f4;text-align:right;\">Price</th><th"
+            + " style=\"padding:8px;border:1px solid"
+            + " #ddd;background-color:#f4f4f4;text-align:right;\">Total</th></tr></thead><tbody>"
+            + itemsHtml
+            + "</tbody></table>"
+            + "<h3 style=\"text-align:right;\">Total: $"
+            + String.format("%.2f", sale.getTotalAmount())
+            + "</h3>"
+            + "</body></html>";
 
     InternetAddress recipient = new InternetAddress(event.getEmail());
-    mailer.accept(new Email(recipient, List.of(), List.of(), "Sale Confirmed", htmlBody, List.of()));
+    mailer.accept(
+        new Email(recipient, List.of(), List.of(), "Sale Confirmed", htmlBody, List.of()));
   }
 }
