@@ -33,6 +33,9 @@ public class StockController {
   @PatchMapping("/books/{bookId}/editions/{editionId}/stock")
   public StockResponse updateEditionStock(
       @PathVariable UUID bookId, @PathVariable UUID editionId, @RequestBody Integer quantity) {
+    if (quantity < 0) {
+      throw new IllegalArgumentException("Stock quantity cannot be negative");
+    }
     bookEditionService.updateEditionStock(bookId, editionId, quantity);
     BookEdition edition = findEdition(bookId, editionId);
     return new StockResponse(editionId, edition.getIsbn(), quantity);

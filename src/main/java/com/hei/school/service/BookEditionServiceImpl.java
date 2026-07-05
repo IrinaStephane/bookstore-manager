@@ -70,7 +70,6 @@ public class BookEditionServiceImpl implements BookEditionService {
 
     edition.setIsbn(request.getIsbn());
     edition.setFormat(request.getFormat());
-    edition.setSellingPrice(request.getSellingPrice());
     edition.setPublishedDate(request.getPublishedDate());
     edition.setCoverImageUrl(request.getCoverImageUrl());
     edition.setCondition(request.getCondition());
@@ -82,7 +81,6 @@ public class BookEditionServiceImpl implements BookEditionService {
     Double oldPrice = edition.getSellingPrice();
     Double newPrice = request.getSellingPrice();
     if (!newPrice.equals(oldPrice)) {
-      edition.setSellingPrice(newPrice);
       PriceHistory history =
           PriceHistory.builder()
               .edition(edition)
@@ -91,6 +89,7 @@ public class BookEditionServiceImpl implements BookEditionService {
               .build();
       priceHistoryRepository.save(history);
     }
+    edition.setSellingPrice(newPrice);
 
     return bookEditionMapper.toResponse(bookEditionRepository.save(edition));
   }

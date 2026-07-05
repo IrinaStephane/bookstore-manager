@@ -90,6 +90,10 @@ public class BookServiceImpl implements BookService {
   public BookResponse updateBook(UUID id, BookUpdateRequest request) {
     Book book = findBookOrThrow(id);
 
+    if (!book.getTitle().equalsIgnoreCase(request.getTitle())
+        && bookRepository.existsByTitleIgnoreCase(request.getTitle())) {
+      throw new BookAlreadyExistsException(request.getTitle());
+    }
     book.setTitle(request.getTitle());
     book.setDescription(request.getDescription());
     book.setLanguage(request.getLanguage());
@@ -105,6 +109,10 @@ public class BookServiceImpl implements BookService {
     Book book = findBookOrThrow(id);
 
     if (request.getTitle() != null) {
+      if (!book.getTitle().equalsIgnoreCase(request.getTitle())
+          && bookRepository.existsByTitleIgnoreCase(request.getTitle())) {
+        throw new BookAlreadyExistsException(request.getTitle());
+      }
       book.setTitle(request.getTitle());
     }
     if (request.getDescription() != null) {
