@@ -25,12 +25,14 @@ public class BookMapper {
   private final ReviewMapper reviewMapper;
 
   public BookResponse toResponse(Book domain) {
-    List<BookEditionResponse> editions = domain.getEditions() == null
-        ? Collections.emptyList()
-        : domain.getEditions().stream().map(bookEditionMapper::toResponse).toList();
-    List<ReviewResponse> reviews = domain.getReviews() == null
-        ? Collections.emptyList()
-        : domain.getReviews().stream().map(reviewMapper::toResponse).toList();
+    List<BookEditionResponse> editions =
+        domain.getEditions() == null
+            ? Collections.emptyList()
+            : domain.getEditions().stream().map(bookEditionMapper::toResponse).toList();
+    List<ReviewResponse> reviews =
+        domain.getReviews() == null
+            ? Collections.emptyList()
+            : domain.getReviews().stream().map(reviewMapper::toResponse).toList();
     return BookResponse.builder()
         .id(domain.getId())
         .title(domain.getTitle())
