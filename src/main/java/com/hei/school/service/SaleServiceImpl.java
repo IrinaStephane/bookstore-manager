@@ -46,7 +46,7 @@ public class SaleServiceImpl implements SaleService {
 
       if (edition.getQuantityInStock() < itemReq.getQuantity()) {
         throw new IllegalArgumentException(
-            "Insufficient stock for edition " + itemReq.getEditionId());
+            "Only " + edition.getQuantityInStock() + " in stock for edition " + itemReq.getEditionId());
       }
 
       edition.decrementStock(itemReq.getQuantity());
