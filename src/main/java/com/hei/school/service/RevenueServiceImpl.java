@@ -29,19 +29,19 @@ public class RevenueServiceImpl implements RevenueService {
       List<Genre> genres = item.getEdition().getBook().getGenres();
 
       for (Genre genre : genres) {
-        revenueMap
-            .computeIfAbsent(genre, k -> new RevenueAccumulator())
-            .add(lineTotal, 1L);
+        revenueMap.computeIfAbsent(genre, k -> new RevenueAccumulator()).add(lineTotal, 1L);
       }
     }
 
     return revenueMap.entrySet().stream()
-        .map(entry -> GenreRevenueResponse.builder()
-            .genreId(entry.getKey().getId())
-            .genreName(entry.getKey().getName())
-            .totalRevenue(entry.getValue().totalRevenue)
-            .saleCount(entry.getValue().saleCount)
-            .build())
+        .map(
+            entry ->
+                GenreRevenueResponse.builder()
+                    .genreId(entry.getKey().getId())
+                    .genreName(entry.getKey().getName())
+                    .totalRevenue(entry.getValue().totalRevenue)
+                    .saleCount(entry.getValue().saleCount)
+                    .build())
         .toList();
   }
 
