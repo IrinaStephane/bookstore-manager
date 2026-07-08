@@ -3,10 +3,13 @@ package com.hei.school.service;
 import com.hei.school.endpoint.rest.model.GenreRevenueResponse;
 import com.hei.school.entity.Genre;
 import com.hei.school.entity.SaleItem;
+import com.hei.school.repository.GenreRepository;
 import com.hei.school.repository.SaleItemRepository;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RevenueServiceImpl implements RevenueService {
 
   private final SaleItemRepository saleItemRepository;
+  private final GenreRepository genreRepository;
 
   @Override
   public List<GenreRevenueResponse> getRevenueByGenre() {
@@ -43,6 +47,30 @@ public class RevenueServiceImpl implements RevenueService {
                     .saleCount(entry.getValue().saleCount)
                     .build())
         .toList();
+  }
+
+  @Override
+  public GenreRevenueResponse getRevenueByGenre(UUID genreId) {
+    Genre genre =
+        genreRepository
+            .findById(genreId)
+            .orElseThrow(() -> new NoSuchElementException("Genre not found: " + genreId));
+
+    List<SaleItem> items = saleItemRepository.findByGenreId(genreId);
+    double totalRevenue = 0.0;
+    long saleCount = 0;
+
+    for (SaleItem item : items) {
+      totalRevenue += item.getLineTotal();
+      saleCount++;
+    }
+
+    return GenreRevenueResponse.builder()
+        .genreId(genre.getId())
+        .genreName(genre.getName())
+        .totalRevenue(totalRevenue)
+        .saleCount(saleCount)
+        .build();
   }
 
   private static class RevenueAccumulator {
