@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-@Transactional(readOnly = true)
 public class SaleServiceImpl implements SaleService {
 
   private final SaleRepository saleRepository;
