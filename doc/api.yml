@@ -550,6 +550,23 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /genres/revenue:
+    get:
+      tags: [Genres]
+      summary: Total revenue grouped by genre
+      operationId: getRevenueByGenre
+      responses:
+        '200':
+          description: Revenue per genre
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GenreRevenueResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /genres/{genreId}:
     parameters:
       - name: genreId
@@ -893,6 +910,20 @@ components:
           type: string
           maxLength: 100
 
+    GenreRevenueResponse:
+      type: object
+      properties:
+        genreId:
+          type: string
+          format: uuid
+          readOnly: true
+        genreName:
+          type: string
+        totalRevenue:
+          type: number
+          format: double
+          readOnly: true
+
     GenreResponse:
       type: object
       properties:
@@ -1134,13 +1165,17 @@ components:
 
     SaleRequest:
       type: object
-      required: [userId, paymentMethod, items]
+      required: [userId, paymentMethod, items, email]
       properties:
         userId:
           type: string
           format: uuid
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
+        email:
+          type: string
+          format: email
+          description: Customer email for confirmation receipt
         items:
           type: array
           minItems: 1
@@ -1191,6 +1226,10 @@ components:
         userId:
           type: string
           format: uuid
+        email:
+          type: string
+          format: email
+          readOnly: true
         items:
           type: array
           items:

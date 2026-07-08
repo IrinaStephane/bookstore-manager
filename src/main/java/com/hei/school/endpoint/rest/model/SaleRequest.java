@@ -2,6 +2,7 @@ package com.hei.school.endpoint.rest.model;
 
 import com.hei.school.entity.enums.PaymentMethod;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -18,6 +19,10 @@ import lombok.NoArgsConstructor;
 public class SaleRequest {
   @NotNull(message = "userId is mandatory")
   private UUID userId;
+
+  @NotNull(message = "email is mandatory")
+  @Email(message = "email must be valid")
+  private String email;
 
   @NotNull(message = "paymentMethod is mandatory")
   private PaymentMethod paymentMethod;

@@ -1,5 +1,7 @@
 package com.hei.school.service;
 
+import com.hei.school.endpoint.event.EventProducer;
+import com.hei.school.endpoint.event.model.SaleConfirmedEvent;
 import com.hei.school.endpoint.rest.model.SaleItemRequest;
 import com.hei.school.endpoint.rest.model.SaleItemResponse;
 import com.hei.school.endpoint.rest.model.SaleRequest;
@@ -14,16 +16,20 @@ import com.hei.school.repository.SaleRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 @Transactional(readOnly = true)
 public class SaleServiceImpl implements SaleService {
 
   private final SaleRepository saleRepository;
   private final BookEditionRepository bookEditionRepository;
+  private final EventProducer<SaleConfirmedEvent> eventProducer;
 
   @Transactional
   public SaleResponse createSale(SaleRequest request) {
@@ -46,7 +52,10 @@ public class SaleServiceImpl implements SaleService {
 
       if (edition.getQuantityInStock() < itemReq.getQuantity()) {
         throw new IllegalArgumentException(
-            "Insufficient stock for edition " + itemReq.getEditionId());
+            "Only "
+                + edition.getQuantityInStock()
+                + " in stock for edition "
+                + itemReq.getEditionId());
       }
 
       edition.decrementStock(itemReq.getQuantity());
@@ -66,6 +75,17 @@ public class SaleServiceImpl implements SaleService {
     sale.setItems(saleItems);
 
     Sale savedSale = saleRepository.save(sale);
+
+    try {
+      eventProducer.accept(
+          List.of(
+              SaleConfirmedEvent.builder()
+                  .email(request.getEmail())
+                  .saleId(savedSale.getId().toString())
+                  .build()));
+    } catch (Exception e) {
+      log.warn("Failed to produce SaleConfirmedEvent: {}", e.getMessage());
+    }
 
     return toResponse(savedSale);
   }
