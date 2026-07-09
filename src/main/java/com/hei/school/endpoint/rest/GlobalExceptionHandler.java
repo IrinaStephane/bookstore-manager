@@ -4,9 +4,11 @@ import com.hei.school.exception.BadRequestException;
 import com.hei.school.exception.DuplicateResourceException;
 import com.hei.school.exception.ResourceNotFoundException;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -40,6 +42,17 @@ public class GlobalExceptionHandler {
       IllegalArgumentException e, WebRequest request) {
     log.warn("Invalid argument: {}", e.getMessage());
     return buildResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleValidation(
+      MethodArgumentNotValidException e, WebRequest request) {
+    String message =
+        e.getBindingResult().getFieldErrors().stream()
+            .map(f -> f.getField() + ": " + f.getDefaultMessage())
+            .collect(Collectors.joining(", "));
+    log.warn("Validation failed: {}", message);
+    return buildResponse(HttpStatus.BAD_REQUEST, message, request);
   }
 
   @ExceptionHandler(Exception.class)
