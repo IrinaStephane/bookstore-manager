@@ -10,11 +10,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
-public class ApiKeyFilter extends org.springframework.web.filter.OncePerRequestFilter {
+public class ApiKeyFilter extends OncePerRequestFilter {
 
   private static final String API_KEY_HEADER = "X-API-KEY";
 
@@ -62,6 +67,11 @@ public class ApiKeyFilter extends org.springframework.web.filter.OncePerRequestF
       objectMapper.writeValue(response.getWriter(), body);
       return;
     }
+
+    var authentication =
+        new UsernamePasswordAuthenticationToken(
+            "api-key-client", null, List.of(new SimpleGrantedAuthority("ROLE_API_CLIENT")));
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
     filterChain.doFilter(request, response);
   }
