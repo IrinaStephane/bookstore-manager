@@ -36,7 +36,8 @@ class PublisherControllerTest {
 
     given(publisherService.getAll()).willReturn(List.of(response));
 
-    mockMvc.perform(get("/publishers"))
+    mockMvc
+        .perform(get("/publishers"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value("Penguin"));
   }
@@ -48,7 +49,8 @@ class PublisherControllerTest {
 
     given(publisherService.getById(id)).willReturn(response);
 
-    mockMvc.perform(get("/publishers/{id}", id))
+    mockMvc
+        .perform(get("/publishers/{id}", id))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value("Penguin"));
   }
@@ -68,24 +70,29 @@ class PublisherControllerTest {
 
     given(publisherService.create(any())).willReturn(response);
 
-    mockMvc.perform(post("/publishers")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/publishers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.name").value("Penguin"));
   }
 
   @Test
   void createPublisherShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/publishers")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(PublisherCreateRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/publishers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(PublisherCreateRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 
   @Test
   void deletePublisherShouldReturn204() throws Exception {
-    mockMvc.perform(delete("/publishers/{id}", UUID.randomUUID()))
+    mockMvc
+        .perform(delete("/publishers/{id}", UUID.randomUUID()))
         .andExpect(status().isNoContent());
   }
 

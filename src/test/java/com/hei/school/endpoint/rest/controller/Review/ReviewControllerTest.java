@@ -38,7 +38,8 @@ class ReviewControllerTest {
 
     given(reviewService.getReviewsByBookId(bookId)).willReturn(List.of(response));
 
-    mockMvc.perform(get("/books/{bookId}/reviews", bookId))
+    mockMvc
+        .perform(get("/books/{bookId}/reviews", bookId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].rating").value(5));
   }
@@ -46,40 +47,42 @@ class ReviewControllerTest {
   @Test
   void getReviewsShouldReturn404WhenBookNotFound() throws Exception {
     var bookId = UUID.randomUUID();
-    given(reviewService.getReviewsByBookId(bookId))
-        .willThrow(new BookNotFoundException(bookId));
+    given(reviewService.getReviewsByBookId(bookId)).willThrow(new BookNotFoundException(bookId));
 
-    mockMvc.perform(get("/books/{bookId}/reviews", bookId))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(get("/books/{bookId}/reviews", bookId)).andExpect(status().isNotFound());
   }
 
   @Test
   void addReviewShouldReturn201() throws Exception {
     var bookId = UUID.randomUUID();
-    var request = ReviewCreateRequest.builder()
-        .rating(5).userId(UUID.randomUUID()).build();
+    var request = ReviewCreateRequest.builder().rating(5).userId(UUID.randomUUID()).build();
     var response = ReviewResponse.builder().id(UUID.randomUUID()).rating(5).build();
 
     given(reviewService.addReview(any(), any())).willReturn(response);
 
-    mockMvc.perform(post("/books/{bookId}/reviews", bookId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/books/{bookId}/reviews", bookId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.rating").value(5));
   }
 
   @Test
   void addReviewShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/books/{bookId}/reviews", UUID.randomUUID())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(ReviewCreateRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/books/{bookId}/reviews", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ReviewCreateRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 
   @Test
   void deleteReviewShouldReturn204() throws Exception {
-    mockMvc.perform(delete("/books/{bookId}/reviews/{id}", UUID.randomUUID(), UUID.randomUUID()))
+    mockMvc
+        .perform(delete("/books/{bookId}/reviews/{id}", UUID.randomUUID(), UUID.randomUUID()))
         .andExpect(status().isNoContent());
   }
 
@@ -88,9 +91,11 @@ class ReviewControllerTest {
     var bookId = UUID.randomUUID();
     var reviewId = UUID.randomUUID();
     willThrow(new ReviewNotFoundException(reviewId))
-        .given(reviewService).deleteReview(bookId, reviewId);
+        .given(reviewService)
+        .deleteReview(bookId, reviewId);
 
-    mockMvc.perform(delete("/books/{bookId}/reviews/{id}", bookId, reviewId))
+    mockMvc
+        .perform(delete("/books/{bookId}/reviews/{id}", bookId, reviewId))
         .andExpect(status().isNotFound());
   }
 }

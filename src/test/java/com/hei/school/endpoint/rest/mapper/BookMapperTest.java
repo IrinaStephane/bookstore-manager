@@ -39,17 +39,18 @@ class BookMapperTest {
     publisher.setId(UUID.randomUUID());
     publisher.setName("Secker & Warburg");
 
-    edition = BookEdition.builder()
-        .id(UUID.randomUUID())
-        .isbn("978-0451524935")
-        .format(BookFormat.PAPERBACK)
-        .sellingPrice(10.99)
-        .publishedDate(LocalDate.of(1949, 6, 8))
-        .quantityInStock(100)
-        .totalReceived(100)
-        .totalSold(45)
-        .publisher(publisher)
-        .build();
+    edition =
+        BookEdition.builder()
+            .id(UUID.randomUUID())
+            .isbn("978-0451524935")
+            .format(BookFormat.PAPERBACK)
+            .sellingPrice(10.99)
+            .publishedDate(LocalDate.of(1949, 6, 8))
+            .quantityInStock(100)
+            .totalReceived(100)
+            .totalSold(45)
+            .publisher(publisher)
+            .build();
 
     review = new Review();
     review.setId(UUID.randomUUID());
@@ -114,12 +115,13 @@ class BookMapperTest {
 
   @Test
   void toEntityShouldMapAllFields() {
-    var request = BookCreateRequest.builder()
-        .title("Animal Farm")
-        .description("A satirical allegory")
-        .language(Language.EN)
-        .authorIds(List.of(UUID.randomUUID()))
-        .build();
+    var request =
+        BookCreateRequest.builder()
+            .title("Animal Farm")
+            .description("A satirical allegory")
+            .language(Language.EN)
+            .authorIds(List.of(UUID.randomUUID()))
+            .build();
 
     Book result = bookMapper.toEntity(request);
 
@@ -131,11 +133,12 @@ class BookMapperTest {
 
   @Test
   void toEntityShouldMapNullDescription() {
-    var request = BookCreateRequest.builder()
-        .title("Animal Farm")
-        .language(Language.EN)
-        .authorIds(List.of(UUID.randomUUID()))
-        .build();
+    var request =
+        BookCreateRequest.builder()
+            .title("Animal Farm")
+            .language(Language.EN)
+            .authorIds(List.of(UUID.randomUUID()))
+            .build();
 
     Book result = bookMapper.toEntity(request);
 

@@ -30,33 +30,37 @@ class ArrivalControllerTest {
 
   @Test
   void createArrivalShouldReturn201() throws Exception {
-    var request = ArrivalRequest.builder()
-        .arrivalDate(LocalDate.now())
-        .items(List.of(ArrivalItemRequest.builder()
-            .editionId(UUID.randomUUID())
-            .quantity(10)
-            .unitCost(5.0)
-            .build()))
-        .build();
-    var response = ArrivalResponse.builder()
-        .id(UUID.randomUUID())
-        .totalCost(50.0)
-        .build();
+    var request =
+        ArrivalRequest.builder()
+            .arrivalDate(LocalDate.now())
+            .items(
+                List.of(
+                    ArrivalItemRequest.builder()
+                        .editionId(UUID.randomUUID())
+                        .quantity(10)
+                        .unitCost(5.0)
+                        .build()))
+            .build();
+    var response = ArrivalResponse.builder().id(UUID.randomUUID()).totalCost(50.0).build();
 
     given(arrivalService.createArrival(any())).willReturn(response);
 
-    mockMvc.perform(post("/arrivals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/arrivals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.totalCost").value(50.0));
   }
 
   @Test
   void createArrivalShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/arrivals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(ArrivalRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/arrivals")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ArrivalRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 }

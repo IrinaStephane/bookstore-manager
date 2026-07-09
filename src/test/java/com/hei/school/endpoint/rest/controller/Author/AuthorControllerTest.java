@@ -40,7 +40,8 @@ class AuthorControllerTest {
 
     given(authorService.getAllAuthors(any(), any())).willReturn(page);
 
-    mockMvc.perform(get("/authors"))
+    mockMvc
+        .perform(get("/authors"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content[0].firstName").value("Jane"));
   }
@@ -52,7 +53,8 @@ class AuthorControllerTest {
 
     given(authorService.getById(id)).willReturn(response);
 
-    mockMvc.perform(get("/authors/{id}", id))
+    mockMvc
+        .perform(get("/authors/{id}", id))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(id.toString()));
   }
@@ -72,9 +74,11 @@ class AuthorControllerTest {
 
     given(authorService.create(any())).willReturn(response);
 
-    mockMvc.perform(post("/authors")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.firstName").value("Jane"));
   }
@@ -83,9 +87,11 @@ class AuthorControllerTest {
   void createAuthorShouldReturn400WhenInvalid() throws Exception {
     var request = AuthorCreateRequest.builder().lastName("Austen").build();
 
-    mockMvc.perform(post("/authors")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isBadRequest());
   }
 
@@ -97,9 +103,11 @@ class AuthorControllerTest {
 
     given(authorService.update(any(), any())).willReturn(response);
 
-    mockMvc.perform(put("/authors/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            put("/authors/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.firstName").value("Emily"));
   }

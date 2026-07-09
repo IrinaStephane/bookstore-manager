@@ -37,7 +37,8 @@ class GenreControllerTest {
 
     given(genreService.getAll()).willReturn(List.of(response));
 
-    mockMvc.perform(get("/genres"))
+    mockMvc
+        .perform(get("/genres"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value("Fiction"));
   }
@@ -49,7 +50,8 @@ class GenreControllerTest {
 
     given(genreService.getById(id)).willReturn(response);
 
-    mockMvc.perform(get("/genres/{id}", id))
+    mockMvc
+        .perform(get("/genres/{id}", id))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value("Fiction"));
   }
@@ -69,18 +71,22 @@ class GenreControllerTest {
 
     given(genreService.create(any())).willReturn(response);
 
-    mockMvc.perform(post("/genres")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/genres")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.name").value("Fiction"));
   }
 
   @Test
   void createGenreShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/genres")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(GenreCreateRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/genres")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(GenreCreateRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 
@@ -90,16 +96,17 @@ class GenreControllerTest {
 
     given(genreService.create(any())).willThrow(new DuplicateResourceException("duplicate"));
 
-    mockMvc.perform(post("/genres")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/genres")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isConflict());
   }
 
   @Test
   void deleteGenreShouldReturn204() throws Exception {
-    mockMvc.perform(delete("/genres/{id}", UUID.randomUUID()))
-        .andExpect(status().isNoContent());
+    mockMvc.perform(delete("/genres/{id}", UUID.randomUUID())).andExpect(status().isNoContent());
   }
 
   @Test

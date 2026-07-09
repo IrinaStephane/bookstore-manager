@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.hei.school.endpoint.rest.model.BookEditionCreateRequest;
 import com.hei.school.endpoint.rest.model.BookEditionResponse;
-import com.hei.school.endpoint.rest.model.PublisherSummary;
 import com.hei.school.entity.BookEdition;
 import com.hei.school.entity.Publisher;
 import com.hei.school.entity.enums.BookCondition;
@@ -23,19 +22,20 @@ class BookEditionMapperTest {
     var publisherId = UUID.randomUUID();
     var publisher = new Publisher(publisherId, "Penguin", "UK");
     var publishedDate = LocalDate.of(2024, 1, 15);
-    var edition = BookEdition.builder()
-        .id(id)
-        .isbn("978-0141439518")
-        .format(BookFormat.PAPERBACK)
-        .sellingPrice(12.99)
-        .publishedDate(publishedDate)
-        .coverImageUrl("http://example.com/cover.jpg")
-        .condition(BookCondition.NEW)
-        .quantityInStock(50)
-        .totalReceived(100)
-        .totalSold(30)
-        .publisher(publisher)
-        .build();
+    var edition =
+        BookEdition.builder()
+            .id(id)
+            .isbn("978-0141439518")
+            .format(BookFormat.PAPERBACK)
+            .sellingPrice(12.99)
+            .publishedDate(publishedDate)
+            .coverImageUrl("http://example.com/cover.jpg")
+            .condition(BookCondition.NEW)
+            .quantityInStock(50)
+            .totalReceived(100)
+            .totalSold(30)
+            .publisher(publisher)
+            .build();
 
     BookEditionResponse result = bookEditionMapper.toResponse(edition);
 
@@ -57,16 +57,17 @@ class BookEditionMapperTest {
 
   @Test
   void toResponseShouldMapNullPublisher() {
-    var edition = BookEdition.builder()
-        .id(UUID.randomUUID())
-        .isbn("978-0141439518")
-        .format(BookFormat.HARDCOVER)
-        .sellingPrice(20.0)
-        .quantityInStock(10)
-        .totalReceived(10)
-        .totalSold(0)
-        .publisher(null)
-        .build();
+    var edition =
+        BookEdition.builder()
+            .id(UUID.randomUUID())
+            .isbn("978-0141439518")
+            .format(BookFormat.HARDCOVER)
+            .sellingPrice(20.0)
+            .quantityInStock(10)
+            .totalReceived(10)
+            .totalSold(0)
+            .publisher(null)
+            .build();
 
     BookEditionResponse result = bookEditionMapper.toResponse(edition);
 
@@ -76,15 +77,16 @@ class BookEditionMapperTest {
   @Test
   void toEntityShouldMapAllFields() {
     var publishedDate = LocalDate.of(2024, 6, 1);
-    var request = BookEditionCreateRequest.builder()
-        .isbn("978-0141439518")
-        .format(BookFormat.PAPERBACK)
-        .sellingPrice(15.99)
-        .publishedDate(publishedDate)
-        .coverImageUrl("http://example.com/cover.jpg")
-        .condition(BookCondition.NEW)
-        .quantityInStock(20)
-        .build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .isbn("978-0141439518")
+            .format(BookFormat.PAPERBACK)
+            .sellingPrice(15.99)
+            .publishedDate(publishedDate)
+            .coverImageUrl("http://example.com/cover.jpg")
+            .condition(BookCondition.NEW)
+            .quantityInStock(20)
+            .build();
 
     BookEdition result = bookEditionMapper.toEntity(request);
 
@@ -102,12 +104,13 @@ class BookEditionMapperTest {
 
   @Test
   void toEntityShouldDefaultQuantityInStockToZero() {
-    var request = BookEditionCreateRequest.builder()
-        .isbn("978-0141439518")
-        .format(BookFormat.DIGITAL)
-        .sellingPrice(9.99)
-        .quantityInStock(null)
-        .build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .isbn("978-0141439518")
+            .format(BookFormat.DIGITAL)
+            .sellingPrice(9.99)
+            .quantityInStock(null)
+            .build();
 
     BookEdition result = bookEditionMapper.toEntity(request);
 

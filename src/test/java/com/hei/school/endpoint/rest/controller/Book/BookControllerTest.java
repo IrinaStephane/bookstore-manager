@@ -43,7 +43,8 @@ class BookControllerTest {
 
     given(bookService.getAllBooks(any(), any(), any(), any(), any())).willReturn(page);
 
-    mockMvc.perform(get("/books"))
+    mockMvc
+        .perform(get("/books"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content[0].title").value("1984"));
   }
@@ -55,7 +56,8 @@ class BookControllerTest {
 
     given(bookService.getBookById(id)).willReturn(response);
 
-    mockMvc.perform(get("/books/{id}", id))
+    mockMvc
+        .perform(get("/books/{id}", id))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("1984"));
   }
@@ -70,27 +72,32 @@ class BookControllerTest {
 
   @Test
   void createBookShouldReturn201() throws Exception {
-    var request = BookCreateRequest.builder()
-        .title("1984")
-        .language(Language.EN)
-        .authorIds(List.of(UUID.randomUUID()))
-        .build();
+    var request =
+        BookCreateRequest.builder()
+            .title("1984")
+            .language(Language.EN)
+            .authorIds(List.of(UUID.randomUUID()))
+            .build();
     var response = BookResponse.builder().id(UUID.randomUUID()).title("1984").build();
 
     given(bookService.createBook(any())).willReturn(response);
 
-    mockMvc.perform(post("/books")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("1984"));
   }
 
   @Test
   void createBookShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/books")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(BookCreateRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(BookCreateRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 
@@ -105,9 +112,11 @@ class BookControllerTest {
 
     given(bookService.updateBook(any(), any())).willReturn(response);
 
-    mockMvc.perform(put("/books/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            put("/books/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("1984"));
   }
@@ -121,16 +130,17 @@ class BookControllerTest {
 
     given(bookService.patchBook(any(), any())).willReturn(response);
 
-    mockMvc.perform(patch("/books/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            patch("/books/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("Updated"));
   }
 
   @Test
   void deleteBookShouldReturnOk() throws Exception {
-    mockMvc.perform(delete("/books/{id}", UUID.randomUUID()))
-        .andExpect(status().isOk());
+    mockMvc.perform(delete("/books/{id}", UUID.randomUUID())).andExpect(status().isOk());
   }
 }

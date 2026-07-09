@@ -63,11 +63,8 @@ class ReviewMapperTest {
   @Test
   void toEntityShouldMapAllFields() {
     var userId = UUID.randomUUID();
-    var request = ReviewCreateRequest.builder()
-        .rating(5)
-        .comment("Excellent")
-        .userId(userId)
-        .build();
+    var request =
+        ReviewCreateRequest.builder().rating(5).comment("Excellent").userId(userId).build();
 
     Review result = reviewMapper.toEntity(request);
 
@@ -81,10 +78,7 @@ class ReviewMapperTest {
   @Test
   void toEntityShouldMapNullComment() {
     var userId = UUID.randomUUID();
-    var request = ReviewCreateRequest.builder()
-        .rating(3)
-        .userId(userId)
-        .build();
+    var request = ReviewCreateRequest.builder().rating(3).userId(userId).build();
 
     Review result = reviewMapper.toEntity(request);
 

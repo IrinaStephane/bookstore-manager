@@ -92,8 +92,8 @@ class RevenueServiceImplTest {
   void getRevenueByGenreIdShouldThrowWhenGenreNotFound() {
     given(genreRepository.findById(any())).willReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,
-        () -> revenueService.getRevenueByGenre(UUID.randomUUID()));
+    assertThrows(
+        ResourceNotFoundException.class, () -> revenueService.getRevenueByGenre(UUID.randomUUID()));
   }
 
   @Test

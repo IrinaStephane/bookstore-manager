@@ -31,34 +31,35 @@ class SaleControllerTest {
 
   @Test
   void createSaleShouldReturn201() throws Exception {
-    var request = SaleRequest.builder()
-        .userId(UUID.randomUUID())
-        .email("test@test.com")
-        .paymentMethod(PaymentMethod.CARD)
-        .items(List.of(SaleItemRequest.builder()
-            .editionId(UUID.randomUUID())
-            .quantity(2)
-            .build()))
-        .build();
-    var response = SaleResponse.builder()
-        .id(UUID.randomUUID())
-        .status(SaleStatus.CONFIRMED)
-        .build();
+    var request =
+        SaleRequest.builder()
+            .userId(UUID.randomUUID())
+            .email("test@test.com")
+            .paymentMethod(PaymentMethod.CARD)
+            .items(
+                List.of(SaleItemRequest.builder().editionId(UUID.randomUUID()).quantity(2).build()))
+            .build();
+    var response =
+        SaleResponse.builder().id(UUID.randomUUID()).status(SaleStatus.CONFIRMED).build();
 
     given(saleService.createSale(any())).willReturn(response);
 
-    mockMvc.perform(post("/sales")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/sales")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.status").value("CONFIRMED"));
   }
 
   @Test
   void createSaleShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/sales")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(SaleRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/sales")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(SaleRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 }

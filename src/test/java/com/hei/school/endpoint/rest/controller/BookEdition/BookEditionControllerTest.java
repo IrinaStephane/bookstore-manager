@@ -34,11 +34,13 @@ class BookEditionControllerTest {
   @Test
   void getEditionsShouldReturnList() throws Exception {
     var bookId = UUID.randomUUID();
-    var response = BookEditionResponse.builder().id(UUID.randomUUID()).isbn("978-0141439518").build();
+    var response =
+        BookEditionResponse.builder().id(UUID.randomUUID()).isbn("978-0141439518").build();
 
     given(bookEditionService.getEditionsByBookId(bookId)).willReturn(List.of(response));
 
-    mockMvc.perform(get("/books/{bookId}/editions", bookId))
+    mockMvc
+        .perform(get("/books/{bookId}/editions", bookId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].isbn").value("978-0141439518"));
   }
@@ -49,34 +51,40 @@ class BookEditionControllerTest {
     given(bookEditionService.getEditionsByBookId(bookId))
         .willThrow(new BookNotFoundException(bookId));
 
-    mockMvc.perform(get("/books/{bookId}/editions", bookId))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(get("/books/{bookId}/editions", bookId)).andExpect(status().isNotFound());
   }
 
   @Test
   void addEditionShouldReturn201() throws Exception {
     var bookId = UUID.randomUUID();
-    var request = BookEditionCreateRequest.builder()
-        .isbn("978-0141439518")
-        .format(BookFormat.PAPERBACK)
-        .sellingPrice(12.99)
-        .build();
-    var response = BookEditionResponse.builder().id(UUID.randomUUID()).isbn("978-0141439518").build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .isbn("978-0141439518")
+            .format(BookFormat.PAPERBACK)
+            .sellingPrice(12.99)
+            .build();
+    var response =
+        BookEditionResponse.builder().id(UUID.randomUUID()).isbn("978-0141439518").build();
 
     given(bookEditionService.addEdition(any(), any())).willReturn(response);
 
-    mockMvc.perform(post("/books/{bookId}/editions", bookId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            post("/books/{bookId}/editions", bookId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.isbn").value("978-0141439518"));
   }
 
   @Test
   void addEditionShouldReturn400WhenInvalid() throws Exception {
-    mockMvc.perform(post("/books/{bookId}/editions", UUID.randomUUID())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(BookEditionCreateRequest.builder().build())))
+    mockMvc
+        .perform(
+            post("/books/{bookId}/editions", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(BookEditionCreateRequest.builder().build())))
         .andExpect(status().isBadRequest());
   }
 
@@ -84,25 +92,29 @@ class BookEditionControllerTest {
   void updateEditionShouldReturnOk() throws Exception {
     var bookId = UUID.randomUUID();
     var editionId = UUID.randomUUID();
-    var request = BookEditionCreateRequest.builder()
-        .isbn("978-0141439518")
-        .format(BookFormat.HARDCOVER)
-        .sellingPrice(15.99)
-        .build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .isbn("978-0141439518")
+            .format(BookFormat.HARDCOVER)
+            .sellingPrice(15.99)
+            .build();
     var response = BookEditionResponse.builder().id(editionId).isbn("978-0141439518").build();
 
     given(bookEditionService.updateEdition(any(), any(), any())).willReturn(response);
 
-    mockMvc.perform(put("/books/{bookId}/editions/{id}", bookId, editionId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
+    mockMvc
+        .perform(
+            put("/books/{bookId}/editions/{id}", bookId, editionId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.isbn").value("978-0141439518"));
   }
 
   @Test
   void deleteEditionShouldReturn204() throws Exception {
-    mockMvc.perform(delete("/books/{bookId}/editions/{id}", UUID.randomUUID(), UUID.randomUUID()))
+    mockMvc
+        .perform(delete("/books/{bookId}/editions/{id}", UUID.randomUUID(), UUID.randomUUID()))
         .andExpect(status().isNoContent());
   }
 }

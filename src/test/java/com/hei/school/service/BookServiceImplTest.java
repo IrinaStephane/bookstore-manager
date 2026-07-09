@@ -80,12 +80,13 @@ class BookServiceImplTest {
   void createBookShouldPersistAndReturn() {
     var authorId = UUID.randomUUID();
     var genreId = UUID.randomUUID();
-    var request = BookCreateRequest.builder()
-        .title("1984")
-        .language(Language.EN)
-        .authorIds(List.of(authorId))
-        .genreIds(List.of(genreId))
-        .build();
+    var request =
+        BookCreateRequest.builder()
+            .title("1984")
+            .language(Language.EN)
+            .authorIds(List.of(authorId))
+            .genreIds(List.of(genreId))
+            .build();
     var book = new Book();
     var saved = new Book();
     var author = new Author();
@@ -107,8 +108,12 @@ class BookServiceImplTest {
 
   @Test
   void createBookShouldThrowWhenDuplicateTitle() {
-    var request = BookCreateRequest.builder().title("1984").language(Language.EN)
-        .authorIds(List.of(UUID.randomUUID())).build();
+    var request =
+        BookCreateRequest.builder()
+            .title("1984")
+            .language(Language.EN)
+            .authorIds(List.of(UUID.randomUUID()))
+            .build();
 
     given(bookRepository.existsByTitleIgnoreCase("1984")).willReturn(true);
 
@@ -118,8 +123,12 @@ class BookServiceImplTest {
   @Test
   void createBookShouldThrowWhenAuthorNotFound() {
     var authorId = UUID.randomUUID();
-    var request = BookCreateRequest.builder().title("1984").language(Language.EN)
-        .authorIds(List.of(authorId)).build();
+    var request =
+        BookCreateRequest.builder()
+            .title("1984")
+            .language(Language.EN)
+            .authorIds(List.of(authorId))
+            .build();
 
     given(bookRepository.existsByTitleIgnoreCase("1984")).willReturn(false);
     given(bookMapper.toEntity(request)).willReturn(new Book());

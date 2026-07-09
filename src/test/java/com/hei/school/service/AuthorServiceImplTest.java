@@ -1,7 +1,6 @@
 package com.hei.school.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -51,8 +50,9 @@ class AuthorServiceImplTest {
   @Test
   void getAllAuthorsWithNameFilterShouldSearch() {
     var pageable = PageRequest.of(0, 20);
-    given(authorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-            "Orwell", "Orwell", pageable))
+    given(
+            authorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+                "Orwell", "Orwell", pageable))
         .willReturn(Page.empty());
 
     authorService.getAllAuthors("Orwell", pageable);
@@ -88,10 +88,7 @@ class AuthorServiceImplTest {
 
   @Test
   void createShouldPersistAndReturn() {
-    var request = AuthorCreateRequest.builder()
-        .firstName("George")
-        .lastName("Orwell")
-        .build();
+    var request = AuthorCreateRequest.builder().firstName("George").lastName("Orwell").build();
     var author = new Author();
     var saved = new Author();
     var response = AuthorResponse.builder().build();
@@ -113,10 +110,7 @@ class AuthorServiceImplTest {
     var existing = new Author();
     existing.setFirstName("George");
     existing.setLastName("Orwell");
-    var request = AuthorUpdateRequest.builder()
-        .firstName("Eric")
-        .lastName("Blair")
-        .build();
+    var request = AuthorUpdateRequest.builder().firstName("Eric").lastName("Blair").build();
     var response = AuthorResponse.builder().build();
 
     given(authorRepository.findById(id)).willReturn(Optional.of(existing));
@@ -135,7 +129,8 @@ class AuthorServiceImplTest {
     var id = UUID.randomUUID();
     given(authorRepository.findById(id)).willReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,
+    assertThrows(
+        ResourceNotFoundException.class,
         () -> authorService.update(id, AuthorUpdateRequest.builder().build()));
   }
 

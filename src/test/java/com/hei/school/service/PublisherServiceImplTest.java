@@ -58,8 +58,8 @@ class PublisherServiceImplTest {
   void getByIdShouldThrowWhenNotFound() {
     given(publisherRepository.findById(any())).willReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class,
-        () -> publisherService.getById(UUID.randomUUID()));
+    assertThrows(
+        ResourceNotFoundException.class, () -> publisherService.getById(UUID.randomUUID()));
   }
 
   @Test

@@ -23,12 +23,17 @@ class RevenueControllerTest {
 
   @Test
   void getRevenueByGenreShouldReturnList() throws Exception {
-    var response = GenreRevenueResponse.builder()
-        .genreId(UUID.randomUUID()).genreName("Fiction").totalRevenue(100.0).build();
+    var response =
+        GenreRevenueResponse.builder()
+            .genreId(UUID.randomUUID())
+            .genreName("Fiction")
+            .totalRevenue(100.0)
+            .build();
 
     given(revenueService.getRevenueByGenre()).willReturn(List.of(response));
 
-    mockMvc.perform(get("/revenue/genres"))
+    mockMvc
+        .perform(get("/revenue/genres"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].genreName").value("Fiction"));
   }
@@ -36,12 +41,13 @@ class RevenueControllerTest {
   @Test
   void getRevenueByGenreIdShouldReturn() throws Exception {
     var id = UUID.randomUUID();
-    var response = GenreRevenueResponse.builder()
-        .genreId(id).genreName("Fiction").totalRevenue(50.0).build();
+    var response =
+        GenreRevenueResponse.builder().genreId(id).genreName("Fiction").totalRevenue(50.0).build();
 
     given(revenueService.getRevenueByGenre(id)).willReturn(response);
 
-    mockMvc.perform(get("/revenue/genres/{id}", id))
+    mockMvc
+        .perform(get("/revenue/genres/{id}", id))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalRevenue").value(50.0));
   }

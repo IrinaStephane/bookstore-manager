@@ -50,8 +50,8 @@ class ReviewServiceImplTest {
   void getReviewsByBookIdShouldThrowWhenBookNotFound() {
     given(bookRepository.existsById(any())).willReturn(false);
 
-    assertThrows(BookNotFoundException.class,
-        () -> reviewService.getReviewsByBookId(UUID.randomUUID()));
+    assertThrows(
+        BookNotFoundException.class, () -> reviewService.getReviewsByBookId(UUID.randomUUID()));
   }
 
   @Test
@@ -59,10 +59,7 @@ class ReviewServiceImplTest {
     var bookId = UUID.randomUUID();
     var book = new Book();
     book.setId(bookId);
-    var request = ReviewCreateRequest.builder()
-        .rating(5)
-        .userId(UUID.randomUUID())
-        .build();
+    var request = ReviewCreateRequest.builder().rating(5).userId(UUID.randomUUID()).build();
     var review = new Review();
     var saved = new Review();
     var response = ReviewResponse.builder().build();
@@ -82,8 +79,8 @@ class ReviewServiceImplTest {
   void addReviewShouldThrowWhenBookNotFound() {
     given(bookRepository.findById(any())).willReturn(Optional.empty());
 
-    assertThrows(BookNotFoundException.class,
-        () -> reviewService.addReview(UUID.randomUUID(), any()));
+    assertThrows(
+        BookNotFoundException.class, () -> reviewService.addReview(UUID.randomUUID(), any()));
   }
 
   @Test
@@ -107,7 +104,8 @@ class ReviewServiceImplTest {
   void deleteReviewShouldThrowWhenBookNotFound() {
     given(bookRepository.existsById(any())).willReturn(false);
 
-    assertThrows(BookNotFoundException.class,
+    assertThrows(
+        BookNotFoundException.class,
         () -> reviewService.deleteReview(UUID.randomUUID(), UUID.randomUUID()));
   }
 
@@ -117,8 +115,8 @@ class ReviewServiceImplTest {
     given(bookRepository.existsById(bookId)).willReturn(true);
     given(reviewRepository.findById(any())).willReturn(Optional.empty());
 
-    assertThrows(ReviewNotFoundException.class,
-        () -> reviewService.deleteReview(bookId, UUID.randomUUID()));
+    assertThrows(
+        ReviewNotFoundException.class, () -> reviewService.deleteReview(bookId, UUID.randomUUID()));
   }
 
   @Test
@@ -133,7 +131,7 @@ class ReviewServiceImplTest {
     given(bookRepository.existsById(bookId)).willReturn(true);
     given(reviewRepository.findById(any())).willReturn(Optional.of(review));
 
-    assertThrows(ReviewNotFoundException.class,
-        () -> reviewService.deleteReview(bookId, UUID.randomUUID()));
+    assertThrows(
+        ReviewNotFoundException.class, () -> reviewService.deleteReview(bookId, UUID.randomUUID()));
   }
 }

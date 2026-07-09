@@ -42,20 +42,22 @@ class ArrivalServiceImplTest {
     edition.setBook(book);
     edition.setIsbn("978-0141439518");
 
-    var request = ArrivalRequest.builder()
-        .arrivalDate(LocalDate.now())
-        .items(List.of(ArrivalItemRequest.builder()
-            .editionId(editionId)
-            .quantity(5)
-            .unitCost(10.0)
-            .condition(BookCondition.NEW)
-            .build()))
-        .build();
+    var request =
+        ArrivalRequest.builder()
+            .arrivalDate(LocalDate.now())
+            .items(
+                List.of(
+                    ArrivalItemRequest.builder()
+                        .editionId(editionId)
+                        .quantity(5)
+                        .unitCost(10.0)
+                        .condition(BookCondition.NEW)
+                        .build()))
+            .build();
 
     given(bookEditionRepository.findById(editionId)).willReturn(Optional.of(edition));
     given(bookEditionRepository.save(edition)).willReturn(edition);
-    given(arrivalRepository.save(any(Arrival.class)))
-        .willAnswer(inv -> inv.getArgument(0));
+    given(arrivalRepository.save(any(Arrival.class))).willAnswer(inv -> inv.getArgument(0));
 
     arrivalService.createArrival(request);
 
@@ -65,14 +67,17 @@ class ArrivalServiceImplTest {
 
   @Test
   void createArrivalShouldThrowWhenEditionNotFound() {
-    var request = ArrivalRequest.builder()
-        .arrivalDate(LocalDate.now())
-        .items(List.of(ArrivalItemRequest.builder()
-            .editionId(UUID.randomUUID())
-            .quantity(5)
-            .unitCost(10.0)
-            .build()))
-        .build();
+    var request =
+        ArrivalRequest.builder()
+            .arrivalDate(LocalDate.now())
+            .items(
+                List.of(
+                    ArrivalItemRequest.builder()
+                        .editionId(UUID.randomUUID())
+                        .quantity(5)
+                        .unitCost(10.0)
+                        .build()))
+            .build();
 
     given(bookEditionRepository.findById(any())).willReturn(Optional.empty());
 

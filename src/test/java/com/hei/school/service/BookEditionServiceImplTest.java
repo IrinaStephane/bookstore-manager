@@ -13,7 +13,6 @@ import com.hei.school.entity.BookEdition;
 import com.hei.school.entity.PriceHistory;
 import com.hei.school.entity.Publisher;
 import com.hei.school.entity.enums.BookFormat;
-import com.hei.school.exception.BookEditionNotFoundException;
 import com.hei.school.exception.BookNotFoundException;
 import com.hei.school.exception.PublisherNotFoundException;
 import com.hei.school.repository.BookEditionRepository;
@@ -58,7 +57,8 @@ class BookEditionServiceImplTest {
   void getEditionsByBookIdShouldThrowWhenBookNotFound() {
     given(bookRepository.existsById(any())).willReturn(false);
 
-    assertThrows(BookNotFoundException.class,
+    assertThrows(
+        BookNotFoundException.class,
         () -> bookEditionService.getEditionsByBookId(UUID.randomUUID()));
   }
 
@@ -70,12 +70,13 @@ class BookEditionServiceImplTest {
     book.setId(bookId);
     var publisher = new Publisher();
     publisher.setId(publisherId);
-    var request = BookEditionCreateRequest.builder()
-        .isbn("978-0141439518")
-        .format(BookFormat.PAPERBACK)
-        .sellingPrice(12.99)
-        .publisherId(publisherId)
-        .build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .isbn("978-0141439518")
+            .format(BookFormat.PAPERBACK)
+            .sellingPrice(12.99)
+            .publisherId(publisherId)
+            .build();
     var edition = new BookEdition();
     edition.setSellingPrice(12.99);
     var saved = new BookEdition();
@@ -100,24 +101,25 @@ class BookEditionServiceImplTest {
   void addEditionShouldThrowWhenBookNotFound() {
     given(bookRepository.findById(any())).willReturn(Optional.empty());
 
-    assertThrows(BookNotFoundException.class,
-        () -> bookEditionService.addEdition(UUID.randomUUID(), any()));
+    assertThrows(
+        BookNotFoundException.class, () -> bookEditionService.addEdition(UUID.randomUUID(), any()));
   }
 
   @Test
   void addEditionShouldThrowWhenPublisherNotFound() {
     var bookId = UUID.randomUUID();
-    var request = BookEditionCreateRequest.builder()
-        .publisherId(UUID.randomUUID())
-        .sellingPrice(10.0)
-        .build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .publisherId(UUID.randomUUID())
+            .sellingPrice(10.0)
+            .build();
 
     given(bookRepository.findById(bookId)).willReturn(Optional.of(new Book()));
     given(bookEditionMapper.toEntity(request)).willReturn(new BookEdition());
     given(publisherRepository.findById(any())).willReturn(Optional.empty());
 
-    assertThrows(PublisherNotFoundException.class,
-        () -> bookEditionService.addEdition(bookId, request));
+    assertThrows(
+        PublisherNotFoundException.class, () -> bookEditionService.addEdition(bookId, request));
   }
 
   @Test
@@ -129,11 +131,12 @@ class BookEditionServiceImplTest {
     var edition = new BookEdition();
     edition.setBook(book);
     edition.setSellingPrice(10.0);
-    var request = BookEditionCreateRequest.builder()
-        .isbn("978-0141439518")
-        .format(BookFormat.PAPERBACK)
-        .sellingPrice(15.0)
-        .build();
+    var request =
+        BookEditionCreateRequest.builder()
+            .isbn("978-0141439518")
+            .format(BookFormat.PAPERBACK)
+            .sellingPrice(15.0)
+            .build();
 
     given(bookRepository.existsById(bookId)).willReturn(true);
     given(bookEditionRepository.findById(editionId)).willReturn(Optional.of(edition));

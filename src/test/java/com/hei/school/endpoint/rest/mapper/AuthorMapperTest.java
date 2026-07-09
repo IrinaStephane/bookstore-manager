@@ -36,11 +36,12 @@ class AuthorMapperTest {
 
   @Test
   void toEntityShouldMapAllFields() {
-    var request = AuthorCreateRequest.builder()
-        .firstName("Jane")
-        .lastName("Austen")
-        .bio("English novelist")
-        .build();
+    var request =
+        AuthorCreateRequest.builder()
+            .firstName("Jane")
+            .lastName("Austen")
+            .bio("English novelist")
+            .build();
 
     Author result = authorMapper.toEntity(request);
 
@@ -52,10 +53,7 @@ class AuthorMapperTest {
 
   @Test
   void toEntityShouldMapNullBio() {
-    var request = AuthorCreateRequest.builder()
-        .firstName("Jane")
-        .lastName("Austen")
-        .build();
+    var request = AuthorCreateRequest.builder().firstName("Jane").lastName("Austen").build();
 
     Author result = authorMapper.toEntity(request);
 
