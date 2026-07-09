@@ -2,6 +2,7 @@ package com.hei.school.endpoint.rest.controller.Stock;
 
 import com.hei.school.endpoint.rest.model.StockResponse;
 import com.hei.school.entity.BookEdition;
+import com.hei.school.exception.BadRequestException;
 import com.hei.school.exception.BookEditionNotFoundException;
 import com.hei.school.repository.BookEditionRepository;
 import java.util.UUID;
@@ -34,7 +35,7 @@ public class StockController {
   public StockResponse updateEditionStock(
       @PathVariable UUID bookId, @PathVariable UUID editionId, @RequestBody Integer quantity) {
     if (quantity < 0) {
-      throw new IllegalArgumentException("Stock quantity cannot be negative");
+      throw new BadRequestException("Stock quantity cannot be negative");
     }
     bookEditionService.updateEditionStock(bookId, editionId, quantity);
     BookEdition edition = findEdition(bookId, editionId);
@@ -47,7 +48,8 @@ public class StockController {
             .findById(editionId)
             .orElseThrow(() -> new BookEditionNotFoundException(editionId));
     if (!edition.getBook().getId().equals(bookId)) {
-      throw new BookEditionNotFoundException(editionId);
+      throw new BookEditionNotFoundException(
+          "Book edition with id " + editionId + " does not belong to the specified book");
     }
     return edition;
   }

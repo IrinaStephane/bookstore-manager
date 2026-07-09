@@ -47,7 +47,7 @@ public class SaleServiceImpl implements SaleService {
               .orElseThrow(
                   () ->
                       new ResourceNotFoundException(
-                          "Edition with id " + itemReq.getEditionId() + " not found"));
+                          "Edition with id " + itemReq.getEditionId() + " was not found"));
 
       if (edition.getQuantityInStock() < itemReq.getQuantity()) {
         throw new IllegalArgumentException(

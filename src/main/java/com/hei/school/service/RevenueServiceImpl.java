@@ -3,12 +3,12 @@ package com.hei.school.service;
 import com.hei.school.endpoint.rest.model.GenreRevenueResponse;
 import com.hei.school.entity.Genre;
 import com.hei.school.entity.SaleItem;
+import com.hei.school.exception.ResourceNotFoundException;
 import com.hei.school.repository.GenreRepository;
 import com.hei.school.repository.SaleItemRepository;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,8 @@ public class RevenueServiceImpl implements RevenueService {
     Genre genre =
         genreRepository
             .findById(genreId)
-            .orElseThrow(() -> new NoSuchElementException("Genre not found: " + genreId));
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Genre with id " + genreId + " was not found"));
 
     List<SaleItem> items = saleItemRepository.findByGenreId(genreId);
     double totalRevenue = 0.0;
