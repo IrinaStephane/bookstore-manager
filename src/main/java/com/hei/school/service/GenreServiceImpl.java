@@ -4,6 +4,7 @@ import com.hei.school.endpoint.rest.mapper.GenreMapper;
 import com.hei.school.endpoint.rest.model.GenreCreateRequest;
 import com.hei.school.endpoint.rest.model.GenreResponse;
 import com.hei.school.entity.Genre;
+import com.hei.school.exception.DuplicateResourceException;
 import com.hei.school.exception.ResourceNotFoundException;
 import com.hei.school.repository.GenreRepository;
 import java.util.List;
@@ -33,8 +34,8 @@ public class GenreServiceImpl implements GenreService {
   @Transactional
   public GenreResponse create(GenreCreateRequest request) {
     if (genreRepository.existsByNameIgnoreCase(request.getName())) {
-      throw new IllegalArgumentException(
-          "Genre with name \"" + request.getName() + "\" already exists");
+      throw new DuplicateResourceException(
+          "A genre with name \"" + request.getName() + "\" already exists.");
     }
     Genre genre = genreMapper.toEntity(request);
     return genreMapper.toResponse(genreRepository.save(genre));

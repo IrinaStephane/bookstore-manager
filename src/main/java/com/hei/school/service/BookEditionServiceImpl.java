@@ -142,7 +142,8 @@ public class BookEditionServiceImpl implements BookEditionService {
             .findById(editionId)
             .orElseThrow(() -> new BookEditionNotFoundException(editionId));
     if (!edition.getBook().getId().equals(bookId)) {
-      throw new BookEditionNotFoundException(editionId);
+      throw new BookEditionNotFoundException(
+          "Book edition with id " + editionId + " does not belong to the specified book");
     }
     return edition;
   }

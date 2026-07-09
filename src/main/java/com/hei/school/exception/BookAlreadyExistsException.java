@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class BookAlreadyExistsException extends RuntimeException {
+public class BookAlreadyExistsException extends DuplicateResourceException {
 
   public BookAlreadyExistsException(String title) {
-    super("A book with the title \"" + title + "\" already exists");
+    super("A book with the title \"" + title + "\" already exists.");
   }
 }
