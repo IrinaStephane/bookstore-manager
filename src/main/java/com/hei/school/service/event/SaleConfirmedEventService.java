@@ -67,7 +67,8 @@ public class SaleConfirmedEventService implements Consumer<SaleConfirmedEvent> {
             + itemsHtml
             + "</tbody></table>"
             + "<h3 style=\"text-align:right;\">Total: "
-            + String.format("%.2f", sale.getTotalAmount()) + " Ar"
+            + String.format("%.2f", sale.getTotalAmount())
+            + " Ar"
             + "</h3>";
 
     File receiptPdf = pdfGenerator.generate(buildReceiptHtml(sale, tableHtml), "sale-receipt-");
