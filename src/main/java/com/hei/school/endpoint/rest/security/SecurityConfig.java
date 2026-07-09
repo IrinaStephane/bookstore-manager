@@ -19,18 +19,18 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, ObjectMapper objectMapper)
-          throws Exception {
+      throws Exception {
     http.csrf(csrf -> csrf.disable())
-            .sessionManagement(
-                    session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(
-                    auth ->
-                            auth.requestMatchers("/ping", "/health/**", "/error")
-                                    .permitAll()
-                                    .anyRequest()
-                                    .authenticated())
-            .addFilterBefore(
-                    new ApiKeyFilter(apiKey, objectMapper), UsernamePasswordAuthenticationFilter.class);
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/ping", "/health/**", "/error")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .addFilterBefore(
+            new ApiKeyFilter(apiKey, objectMapper), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

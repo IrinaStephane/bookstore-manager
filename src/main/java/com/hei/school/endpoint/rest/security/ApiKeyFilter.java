@@ -34,31 +34,31 @@ public class ApiKeyFilter extends org.springframework.web.filter.OncePerRequestF
 
   @Override
   protected void doFilterInternal(
-          HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-          throws ServletException, IOException {
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     String headerKey = request.getHeader(API_KEY_HEADER);
 
     if (headerKey == null || !isValid(headerKey)) {
       log.warn(
-              "Request rejected: {} from {}",
-              headerKey == null ? "missing API key" : "invalid API key",
-              request.getHeader("X-Forwarded-For") != null
-                      ? request.getHeader("X-Forwarded-For")
-                      : request.getRemoteAddr());
+          "Request rejected: {} from {}",
+          headerKey == null ? "missing API key" : "invalid API key",
+          request.getHeader("X-Forwarded-For") != null
+              ? request.getHeader("X-Forwarded-For")
+              : request.getRemoteAddr());
 
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.setContentType("application/json;charset=UTF-8");
 
       ErrorResponse body =
-              new ErrorResponse(
-                      HttpStatus.UNAUTHORIZED.value(),
-                      HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                      headerKey == null
-                              ? "Missing API key: provide it in the X-API-KEY header"
-                              : "Invalid API key",
-                      LocalDateTime.now(),
-                      request.getRequestURI());
+          new ErrorResponse(
+              HttpStatus.UNAUTHORIZED.value(),
+              HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+              headerKey == null
+                  ? "Missing API key: provide it in the X-API-KEY header"
+                  : "Invalid API key",
+              LocalDateTime.now(),
+              request.getRequestURI());
       objectMapper.writeValue(response.getWriter(), body);
       return;
     }
@@ -68,6 +68,6 @@ public class ApiKeyFilter extends org.springframework.web.filter.OncePerRequestF
 
   private boolean isValid(String headerKey) {
     return MessageDigest.isEqual(
-            headerKey.getBytes(StandardCharsets.UTF_8), apiKey.getBytes(StandardCharsets.UTF_8));
+        headerKey.getBytes(StandardCharsets.UTF_8), apiKey.getBytes(StandardCharsets.UTF_8));
   }
 }
