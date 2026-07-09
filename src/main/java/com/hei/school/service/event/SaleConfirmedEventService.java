@@ -3,12 +3,15 @@ package com.hei.school.service.event;
 import com.hei.school.endpoint.event.model.SaleConfirmedEvent;
 import com.hei.school.entity.Sale;
 import com.hei.school.entity.SaleItem;
+import com.hei.school.file.bucket.BucketComponent;
 import com.hei.school.mail.Email;
 import com.hei.school.mail.Mailer;
 import com.hei.school.mail.PdfGenerator;
 import com.hei.school.repository.SaleRepository;
 import jakarta.mail.internet.InternetAddress;
 import java.io.File;
+import java.net.URL;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +27,7 @@ public class SaleConfirmedEventService implements Consumer<SaleConfirmedEvent> {
   private final Mailer mailer;
   private final SaleRepository saleRepository;
   private final PdfGenerator pdfGenerator;
+  private final BucketComponent bucketComponent;
 
   @SneakyThrows
   @Transactional(readOnly = true)
@@ -62,21 +66,29 @@ public class SaleConfirmedEventService implements Consumer<SaleConfirmedEvent> {
             + " #ddd;background-color:#f4f4f4;text-align:right;\">Total</th></tr></thead><tbody>"
             + itemsHtml
             + "</tbody></table>"
-            + "<h3 style=\"text-align:right;\">Total: $"
+            + "<h3 style=\"text-align:right;\">Total: "
             + String.format("%.2f", sale.getTotalAmount())
             + "</h3>";
+
+    File receiptPdf = pdfGenerator.generate(buildReceiptHtml(sale, tableHtml), "sale-receipt-");
+
+    String bucketKey = "receipts/" + sale.getId() + ".pdf";
+    bucketComponent.upload(receiptPdf, bucketKey);
+    URL downloadUrl = bucketComponent.presign(bucketKey, Duration.ofDays(7));
 
     String htmlBody =
         "<html><body><h2>Sale Confirmed</h2><p>Thank you for your purchase!</p>"
             + tableHtml
+            + "<p><a href=\""
+            + downloadUrl
+            + "\">Download your receipt</a></p>"
             + "</body></html>";
-
-    File receiptPdf = pdfGenerator.generate(buildReceiptHtml(sale, tableHtml), "sale-receipt-");
 
     InternetAddress recipient = new InternetAddress(event.getEmail());
     mailer.accept(
-        new Email(
-            recipient, List.of(), List.of(), "Sale Confirmed", htmlBody, List.of(receiptPdf)));
+        new Email(recipient, List.of(), List.of(), "Sale Confirmed", htmlBody, List.of()));
+
+    receiptPdf.delete();
   }
 
   private String buildReceiptHtml(Sale sale, String tableHtml) {
