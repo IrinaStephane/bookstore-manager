@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.hei.school.conf.EnvConf;
 import com.hei.school.conf.FacadeIT;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,10 +14,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@AllArgsConstructor
 class SecurityConfigTest extends FacadeIT {
 
-  private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
   @Test
   void should_reject_secured_endpoint_without_api_key() {
