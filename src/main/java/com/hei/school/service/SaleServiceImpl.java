@@ -53,8 +53,9 @@ public class SaleServiceImpl implements SaleService {
         throw new IllegalArgumentException(
             "Only "
                 + edition.getQuantityInStock()
-                + " in stock for edition "
-                + itemReq.getEditionId());
+                + " in stock for '"
+                + edition.getBook().getTitle()
+                + "'");
       }
 
       edition.decrementStock(itemReq.getQuantity());
