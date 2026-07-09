@@ -2,6 +2,7 @@ package com.hei.school.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 
@@ -129,7 +130,7 @@ class SaleServiceImplTest {
     given(bookEditionRepository.findById(editionId)).willReturn(Optional.of(edition));
     given(bookEditionRepository.save(edition)).willReturn(edition);
     given(saleRepository.save(any(Sale.class))).willAnswer(inv -> inv.getArgument(0));
-    doThrow(new RuntimeException("Event failed")).when(eventProducer).accept(any());
+    doThrow(new RuntimeException("Event failed")).when(eventProducer).accept(anyList());
 
     assertDoesNotThrow(() -> saleService.createSale(request));
   }

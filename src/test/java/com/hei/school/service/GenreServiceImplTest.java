@@ -65,9 +65,10 @@ class GenreServiceImplTest {
 
   @Test
   void getByIdShouldThrowWhenNotFound() {
-    given(genreRepository.findById(UUID.randomUUID())).willReturn(Optional.empty());
+    var id = UUID.randomUUID();
+    given(genreRepository.findById(id)).willReturn(Optional.empty());
 
-    assertThrows(ResourceNotFoundException.class, () -> genreService.getById(UUID.randomUUID()));
+    assertThrows(ResourceNotFoundException.class, () -> genreService.getById(id));
   }
 
   @Test

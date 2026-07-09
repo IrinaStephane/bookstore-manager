@@ -107,7 +107,7 @@ class BookControllerTest {
     var request = new BookUpdateRequest();
     request.setTitle("1984");
     request.setLanguage(Language.EN);
-    request.setAuthorIds(List.of());
+    request.setAuthorIds(List.of(UUID.randomUUID()));
     var response = BookResponse.builder().id(id).title("1984").build();
 
     given(bookService.updateBook(any(), any())).willReturn(response);
