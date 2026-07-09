@@ -1,28 +1,27 @@
 package com.hei.school.endpoint.rest.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hei.school.endpoint.rest.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDateTime;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.http.HttpStatus;
 
-@Component
 @Slf4j
-public class ApiKeyFilter extends OncePerRequestFilter {
+public class ApiKeyFilter extends org.springframework.web.filter.OncePerRequestFilter {
+
+  private static final String API_KEY_HEADER = "X-API-KEY";
 
   private final String apiKey;
   private final ObjectMapper objectMapper;
 
-  public ApiKeyFilter(
-      @Value("${app.api-key}") String apiKey,
-      ObjectMapper objectMapper) {
+  public ApiKeyFilter(String apiKey, ObjectMapper objectMapper) {
     this.apiKey = apiKey;
     this.objectMapper = objectMapper;
   }
@@ -30,42 +29,45 @@ public class ApiKeyFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
-    return path.equals("/ping")
-        || path.startsWith("/health/")
-        || path.startsWith("/swagger-ui/")
-        || path.startsWith("/v3/api-docs")
-        || path.startsWith("/actuator/")
-        || path.equals("/doc/api.yml")
-        || path.equals("/error");
+    return path.equals("/ping") || path.startsWith("/health/") || path.equals("/error");
   }
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      FilterChain filterChain)
-      throws ServletException, IOException {
+          HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
 
-    String headerKey = request.getHeader("X-API-KEY");
+    String headerKey = request.getHeader(API_KEY_HEADER);
 
-    if (headerKey == null || !headerKey.equals(apiKey)) {
-      log.warn("Request rejected: missing or invalid API key from {}", request.getRemoteAddr());
+    if (headerKey == null || !isValid(headerKey)) {
+      log.warn(
+              "Request rejected: {} from {}",
+              headerKey == null ? "missing API key" : "invalid API key",
+              request.getHeader("X-Forwarded-For") != null
+                      ? request.getHeader("X-Forwarded-For")
+                      : request.getRemoteAddr());
+
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.setContentType("application/json;charset=UTF-8");
 
-      Map<String, Object> body = Map.of(
-          "status", 401,
-          "error", "Unauthorized",
-          "message", headerKey == null
-              ? "Missing API key: provide it in the X-API-KEY header"
-              : "Invalid API key",
-          "timestamp", LocalDateTime.now().toString(),
-          "path", request.getRequestURI()
-      );
+      ErrorResponse body =
+              new ErrorResponse(
+                      HttpStatus.UNAUTHORIZED.value(),
+                      HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                      headerKey == null
+                              ? "Missing API key: provide it in the X-API-KEY header"
+                              : "Invalid API key",
+                      LocalDateTime.now(),
+                      request.getRequestURI());
       objectMapper.writeValue(response.getWriter(), body);
       return;
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  private boolean isValid(String headerKey) {
+    return MessageDigest.isEqual(
+            headerKey.getBytes(StandardCharsets.UTF_8), apiKey.getBytes(StandardCharsets.UTF_8));
   }
 }
