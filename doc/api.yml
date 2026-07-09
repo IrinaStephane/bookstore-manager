@@ -5,7 +5,7 @@ info:
     REST API for the Library Management System.
     Covers full CRUD operations for Books, Authors, Genres, Publishers, Reviews,
     and Book Editions, along with Arrival (stock-in) and Sale (stock-out) operations
-    with automatic price history tracking.
+    with automatic price history tracking and revenue reporting by genre.
 
     **Stack:** Spring Boot · Java · Lombok
   version: 1.0.0
@@ -35,6 +35,8 @@ tags:
     description: Stock-in (increments quantityInStock and totalReceived)
   - name: Sales
     description: Stock-out (decrements quantityInStock and increments totalSold)
+  - name: Revenue
+    description: Revenue reporting grouped by genre
 
 paths:
 
@@ -51,23 +53,27 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/Language'
+          example: FR
         - name: genreId
           in: query
           required: false
           schema:
             type: string
             format: uuid
+          example: 33333333-3333-3333-3333-333333333001
         - name: authorId
           in: query
           required: false
           schema:
             type: string
             format: uuid
+          example: 22222222-2222-2222-2222-222222222001
         - name: search
           in: query
           required: false
           schema:
             type: string
+          example: Madagascar
       responses:
         '200':
           description: Paginated list of books
@@ -75,6 +81,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookPage'
+              example:
+                content:
+                  - id: 44444444-4444-4444-4444-444444444001
+                    title: "Nour, 1947"
+                    description: "Roman évoquant l'insurrection malgache de 1947."
+                    language: FR
+                    authors:
+                      - id: 22222222-2222-2222-2222-222222222001
+                        firstName: Jean-Luc
+                        lastName: Raharimanana
+                    genres:
+                      - id: 33333333-3333-3333-3333-333333333001
+                        name: Roman
+                      - id: 33333333-3333-3333-3333-333333333004
+                        name: Histoire
+                    editions:
+                      - id: 55555555-5555-5555-5555-555555555001
+                        isbn: "978-2-84487-000-1"
+                        format: PAPERBACK
+                        sellingPrice: 32000
+                        publishedDate: "2015-03-10"
+                        coverImageUrl: "https://covers.example.com/nour1947.jpg"
+                        condition: NEW
+                        quantityInStock: 12
+                        totalReceived: 20
+                        totalSold: 8
+                        publisher:
+                          id: 11111111-1111-1111-1111-111111111003
+                          name: Editions Jeunes Malgaches
+                          country: Madagascar
+                    reviews:
+                      - id: 77777777-7777-7777-7777-777777777001
+                        rating: 5
+                        comment: "Un roman bouleversant sur l'histoire de Madagascar, à lire absolument."
+                        createdAt: "2025-02-14T10:30:00Z"
+                        userId: 99999999-9999-9999-9999-999999999001
+                totalElements: 10
+                totalPages: 1
+                number: 0
+                size: 20
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -90,6 +136,15 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BookCreateRequest'
+            example:
+              title: "Au-delà des rizières"
+              description: "Fresque historique sur Madagascar au XIXe siècle."
+              language: FR
+              authorIds:
+                - 22222222-2222-2222-2222-222222222005
+              genreIds:
+                - 33333333-3333-3333-3333-333333333001
+                - 33333333-3333-3333-3333-333333333004
       responses:
         '201':
           description: Book created
@@ -97,6 +152,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookResponse'
+              example:
+                id: 44444444-4444-4444-4444-444444444005
+                title: "Au-delà des rizières"
+                description: "Fresque historique sur Madagascar au XIXe siècle."
+                language: FR
+                authors:
+                  - id: 22222222-2222-2222-2222-222222222005
+                    firstName: Naivo
+                    lastName: ""
+                genres:
+                  - id: 33333333-3333-3333-3333-333333333001
+                    name: Roman
+                  - id: 33333333-3333-3333-3333-333333333004
+                    name: Histoire
+                editions: []
+                reviews: []
         '400':
           $ref: '#/components/responses/BadRequest'
         '409':
@@ -119,6 +190,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookResponse'
+              example:
+                id: 44444444-4444-4444-4444-444444444003
+                title: "Le Petit Prince"
+                description: "Conte poétique et philosophique sous forme d'une fable."
+                language: FR
+                authors:
+                  - id: 22222222-2222-2222-2222-222222222003
+                    firstName: Antoine
+                    lastName: "de Saint-Exupéry"
+                genres:
+                  - id: 33333333-3333-3333-3333-333333333003
+                    name: Jeunesse
+                editions:
+                  - id: 55555555-5555-5555-5555-555555555003
+                    isbn: "978-2-07-040850-4"
+                    format: POCKET
+                    sellingPrice: 15000
+                    publishedDate: "1999-04-01"
+                    coverImageUrl: "https://covers.example.com/petitprince.jpg"
+                    condition: NEW
+                    quantityInStock: 25
+                    totalReceived: 40
+                    totalSold: 15
+                    publisher:
+                      id: 11111111-1111-1111-1111-111111111001
+                      name: Gallimard
+                      country: France
+                reviews:
+                  - id: 77777777-7777-7777-7777-777777777003
+                    rating: 5
+                    comment: "Un classique intemporel, parfait pour petits et grands."
+                    createdAt: "2025-01-20T09:00:00Z"
+                    userId: 99999999-9999-9999-9999-999999999003
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -134,6 +238,14 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BookUpdateRequest'
+            example:
+              title: "Le Petit Prince"
+              description: "Conte poétique et philosophique, édition révisée."
+              language: FR
+              authorIds:
+                - 22222222-2222-2222-2222-222222222003
+              genreIds:
+                - 33333333-3333-3333-3333-333333333003
       responses:
         '200':
           description: Book updated
@@ -158,6 +270,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BookPatchRequest'
+            example:
+              description: "Nouvelle description mise à jour."
       responses:
         '200':
           description: Book patched
@@ -201,6 +315,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/BookEditionResponse'
+              example:
+                - id: 55555555-5555-5555-5555-555555555006
+                  isbn: "978-2-07-054127-8"
+                  format: HARDCOVER
+                  sellingPrice: 55000
+                  publishedDate: "1997-06-26"
+                  coverImageUrl: "https://covers.example.com/hp1.jpg"
+                  condition: NEW
+                  quantityInStock: 18
+                  totalReceived: 30
+                  totalSold: 12
+                  publisher:
+                    id: 11111111-1111-1111-1111-111111111005
+                    name: Penguin Random House
+                    country: Etats-Unis
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -216,6 +345,15 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BookEditionCreateRequest'
+            example:
+              isbn: "978-2-07-054129-2"
+              format: HARDCOVER
+              sellingPrice: 55000
+              publishedDate: "1998-07-02"
+              coverImageUrl: "https://covers.example.com/hp2.jpg"
+              condition: NEW
+              quantityInStock: 10
+              publisherId: 11111111-1111-1111-1111-111111111005
       responses:
         '201':
           description: Edition created (PriceHistory recorded)
@@ -223,6 +361,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookEditionResponse'
+              example:
+                id: 55555555-5555-5555-5555-555555555009
+                isbn: "978-2-07-054129-2"
+                format: HARDCOVER
+                sellingPrice: 55000
+                publishedDate: "1998-07-02"
+                coverImageUrl: "https://covers.example.com/hp2.jpg"
+                condition: NEW
+                quantityInStock: 10
+                totalReceived: 10
+                totalSold: 0
+                publisher:
+                  id: 11111111-1111-1111-1111-111111111005
+                  name: Penguin Random House
+                  country: Etats-Unis
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -245,6 +398,15 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BookEditionCreateRequest'
+            example:
+              isbn: "978-2-07-054127-8"
+              format: HARDCOVER
+              sellingPrice: 58000
+              publishedDate: "1997-06-26"
+              coverImageUrl: "https://covers.example.com/hp1.jpg"
+              condition: NEW
+              quantityInStock: 18
+              publisherId: 11111111-1111-1111-1111-111111111005
       responses:
         '200':
           description: Edition updated
@@ -287,6 +449,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StockResponse'
+              example:
+                editionId: 55555555-5555-5555-5555-555555555001
+                isbn: "978-2-84487-000-1"
+                quantityInStock: 12
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -302,6 +468,7 @@ paths:
           application/json:
             schema:
               type: integer
+            example: 15
       responses:
         '200':
           description: Stock updated
@@ -309,6 +476,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StockResponse'
+              example:
+                editionId: 55555555-5555-5555-5555-555555555001
+                isbn: "978-2-84487-000-1"
+                quantityInStock: 15
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -329,6 +500,7 @@ paths:
             application/json:
               schema:
                 type: integer
+              example: 12
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -351,6 +523,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ReviewResponse'
+              example:
+                - id: 77777777-7777-7777-7777-777777777001
+                  rating: 5
+                  comment: "Un roman bouleversant sur l'histoire de Madagascar, à lire absolument."
+                  createdAt: "2025-02-14T10:30:00Z"
+                  userId: 99999999-9999-9999-9999-999999999001
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -366,6 +544,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ReviewCreateRequest'
+            example:
+              rating: 5
+              comment: "Chef-d'oeuvre de la littérature française."
+              userId: 99999999-9999-9999-9999-999999999001
       responses:
         '201':
           description: Review created
@@ -373,6 +555,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReviewResponse'
+              example:
+                id: 77777777-7777-7777-7777-777777777004
+                rating: 5
+                comment: "Chef-d'oeuvre de la littérature française."
+                createdAt: "2025-04-11T18:45:00Z"
+                userId: 99999999-9999-9999-9999-999999999001
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -390,6 +578,7 @@ paths:
           type: string
           format: uuid
         description: Review UUID
+        example: 77777777-7777-7777-7777-777777777001
 
     delete:
       tags: [Reviews]
@@ -417,6 +606,7 @@ paths:
           schema:
             type: string
           description: Search by first or last name
+          example: Rakotoson
       responses:
         '200':
           description: Paginated list of authors
@@ -424,6 +614,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorPage'
+              example:
+                content:
+                  - id: 22222222-2222-2222-2222-222222222002
+                    firstName: Michèle
+                    lastName: Rakotoson
+                    bio: "Romancière et dramaturge malgache installée en France."
+                totalElements: 8
+                totalPages: 1
+                number: 0
+                size: 20
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -437,6 +637,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorCreateRequest'
+            example:
+              firstName: Amin
+              lastName: Maalouf
+              bio: "Ecrivain franco-libanais, membre de l'Académie française."
       responses:
         '201':
           description: Author created
@@ -444,6 +648,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorResponse'
+              example:
+                id: 22222222-2222-2222-2222-222222222008
+                firstName: Amin
+                lastName: Maalouf
+                bio: "Ecrivain franco-libanais, membre de l'Académie française."
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -458,6 +667,7 @@ paths:
           type: string
           format: uuid
         description: Author UUID
+        example: 22222222-2222-2222-2222-222222222001
 
     get:
       tags: [Authors]
@@ -470,6 +680,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorResponse'
+              example:
+                id: 22222222-2222-2222-2222-222222222001
+                firstName: Jean-Luc
+                lastName: Raharimanana
+                bio: "Ecrivain malgache, auteur de romans et nouvelles explorant l'histoire de Madagascar."
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -485,6 +700,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorUpdateRequest'
+            example:
+              firstName: Jean-Luc
+              lastName: Raharimanana
+              bio: "Ecrivain et poète malgache, figure majeure de la littérature contemporaine."
       responses:
         '200':
           description: Author updated
@@ -525,6 +744,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GenreResponse'
+              example:
+                - id: 33333333-3333-3333-3333-333333333001
+                  name: Roman
+                - id: 33333333-3333-3333-3333-333333333003
+                  name: Jeunesse
+                - id: 33333333-3333-3333-3333-333333333004
+                  name: Histoire
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -538,6 +764,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GenreCreateRequest'
+            example:
+              name: Fantastique
       responses:
         '201':
           description: Genre created
@@ -545,25 +773,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenreResponse'
+              example:
+                id: 33333333-3333-3333-3333-333333333006
+                name: Fantastique
         '400':
           $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /genres/revenue:
-    get:
-      tags: [Genres]
-      summary: Total revenue grouped by genre
-      operationId: getRevenueByGenre
-      responses:
-        '200':
-          description: Revenue per genre
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GenreRevenueResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -576,6 +790,7 @@ paths:
           type: string
           format: uuid
         description: Genre UUID
+        example: 33333333-3333-3333-3333-333333333001
 
     get:
       tags: [Genres]
@@ -588,6 +803,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenreResponse'
+              example:
+                id: 33333333-3333-3333-3333-333333333001
+                name: Roman
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -600,6 +818,64 @@ paths:
       responses:
         '204':
           description: Genre deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/genres:
+    get:
+      tags: [Revenue]
+      summary: Total revenue grouped by genre
+      operationId: getRevenueByGenre
+      responses:
+        '200':
+          description: Revenue per genre
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GenreRevenueResponse'
+              example:
+                - genreId: 33333333-3333-3333-3333-333333333006
+                  genreName: Fantastique
+                  totalRevenue: 55000
+                  saleCount: 1
+                - genreId: 33333333-3333-3333-3333-333333333001
+                  genreName: Roman
+                  totalRevenue: 82000
+                  saleCount: 3
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/genres/{genreId}:
+    parameters:
+      - name: genreId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Genre UUID
+        example: 33333333-3333-3333-3333-333333333006
+
+    get:
+      tags: [Revenue]
+      summary: Total revenue for a single genre
+      operationId: getRevenueByGenreId
+      responses:
+        '200':
+          description: Revenue for the genre
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenreRevenueResponse'
+              example:
+                genreId: 33333333-3333-3333-3333-333333333006
+                genreName: Fantastique
+                totalRevenue: 55000
+                saleCount: 1
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -619,6 +895,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PublisherResponse'
+              example:
+                - id: 11111111-1111-1111-1111-111111111001
+                  name: Gallimard
+                  country: France
+                - id: 11111111-1111-1111-1111-111111111003
+                  name: Editions Jeunes Malgaches
+                  country: Madagascar
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -632,6 +915,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PublisherCreateRequest'
+            example:
+              name: Foi et Justice
+              country: Madagascar
       responses:
         '201':
           description: Publisher created
@@ -639,6 +925,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PublisherResponse'
+              example:
+                id: 11111111-1111-1111-1111-111111111004
+                name: Foi et Justice
+                country: Madagascar
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -653,6 +943,7 @@ paths:
           type: string
           format: uuid
         description: Publisher UUID
+        example: 11111111-1111-1111-1111-111111111003
 
     get:
       tags: [Publishers]
@@ -665,6 +956,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PublisherResponse'
+              example:
+                id: 11111111-1111-1111-1111-111111111003
+                name: Editions Jeunes Malgaches
+                country: Madagascar
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -693,6 +988,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ArrivalRequest'
+            example:
+              arrivalDate: "2025-07-01"
+              notes: "Nouveaux titres auteurs malgaches."
+              items:
+                - editionId: 55555555-5555-5555-5555-555555555001
+                  quantity: 10
+                  unitCost: 22000
+                  condition: NEW
+                - editionId: 55555555-5555-5555-5555-555555555005
+                  quantity: 9
+                  unitCost: 21000
+                  condition: NEW
       responses:
         '201':
           description: Arrival recorded, stock incremented
@@ -700,6 +1007,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ArrivalResponse'
+              example:
+                id: 88888888-8888-8888-8888-888888888003
+                arrivalDate: "2025-07-01"
+                notes: "Nouveaux titres auteurs malgaches."
+                totalCost: 409000
+                items:
+                  - id: 99999999-8888-8888-8888-888888888005
+                    quantity: 10
+                    unitCost: 22000
+                    lineTotal: 220000
+                    condition: NEW
+                    editionId: 55555555-5555-5555-5555-555555555001
+                    editionIsbn: "978-2-84487-000-1"
+                  - id: 99999999-8888-8888-8888-888888888006
+                    quantity: 9
+                    unitCost: 21000
+                    lineTotal: 189000
+                    condition: NEW
+                    editionId: 55555555-5555-5555-5555-555555555005
+                    editionIsbn: "978-2-7096-0000-5"
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -716,6 +1043,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SaleRequest'
+            example:
+              userId: 99999999-9999-9999-9999-999999999001
+              email: hei.irina.4@gmail.com
+              paymentMethod: MOBILE_MONEY
+              items:
+                - editionId: 55555555-5555-5555-5555-555555555006
+                  quantity: 1
       responses:
         '201':
           description: Sale recorded, stock decremented
@@ -723,6 +1057,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SaleResponse'
+              example:
+                id: aaaaaaaa-1111-1111-1111-111111111001
+                saleDate: "2025-06-15T11:00:00"
+                totalAmount: 55000
+                paymentMethod: MOBILE_MONEY
+                status: CONFIRMED
+                userId: 99999999-9999-9999-9999-999999999001
+                items:
+                  - id: bbbbbbbb-1111-1111-1111-111111111001
+                    quantity: 1
+                    unitPrice: 55000
+                    lineTotal: 55000
+                    editionId: 55555555-5555-5555-5555-555555555006
+                    editionIsbn: "978-2-07-054127-8"
         '400':
           $ref: '#/components/responses/BadRequest'
         '409':
@@ -741,6 +1089,7 @@ components:
         type: string
         format: uuid
       description: Book UUID
+      example: 44444444-4444-4444-4444-444444444001
 
     EditionIdPath:
       name: editionId
@@ -750,6 +1099,7 @@ components:
         type: string
         format: uuid
       description: Edition UUID
+      example: 55555555-5555-5555-5555-555555555001
 
     PageParam:
       name: page
@@ -760,6 +1110,7 @@ components:
         default: 0
         minimum: 0
       description: Zero-based page index
+      example: 0
 
     SizeParam:
       name: size
@@ -771,6 +1122,7 @@ components:
         minimum: 1
         maximum: 100
       description: Number of items per page
+      example: 20
 
   responses:
     BadRequest:
@@ -779,6 +1131,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
+          example:
+            timestamp: "2025-07-08T10:15:30Z"
+            status: 400
+            error: Bad Request
+            message: "title is mandatory"
+            path: /books
 
     NotFound:
       description: Resource not found
@@ -786,6 +1144,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
+          example:
+            timestamp: "2025-07-08T10:15:30Z"
+            status: 404
+            error: Not Found
+            message: "Book with id 44444444-4444-4444-4444-444444444099 was not found"
+            path: /books/44444444-4444-4444-4444-444444444099
 
     Conflict:
       description: Resource already exists or stock insufficient
@@ -793,6 +1157,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
+          example:
+            timestamp: "2025-07-08T10:15:30Z"
+            status: 409
+            error: Conflict
+            message: "Only 2 in stock for edition 55555555-5555-5555-5555-555555555008"
+            path: /sales
 
     InternalServerError:
       description: Unexpected server error
@@ -800,27 +1170,38 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
+          example:
+            timestamp: "2025-07-08T10:15:30Z"
+            status: 500
+            error: Internal Server Error
+            message: "Unexpected error occurred"
+            path: /books
 
   schemas:
     Language:
       type: string
       enum: [FR, EN, MG, ES, DE, AR, ZH]
+      example: FR
 
     BookFormat:
       type: string
       enum: [HARDCOVER, PAPERBACK, POCKET, DIGITAL]
+      example: PAPERBACK
 
     BookCondition:
       type: string
       enum: [NEW, USED_GOOD, USED_FAIR]
+      example: NEW
 
     PaymentMethod:
       type: string
       enum: [CASH, MOBILE_MONEY, CARD, TRANSFER]
+      example: MOBILE_MONEY
 
     SaleStatus:
       type: string
       enum: [PENDING, CONFIRMED, CANCELLED]
+      example: CONFIRMED
 
     AuthorSummary:
       type: object
@@ -833,6 +1214,10 @@ components:
           type: string
         lastName:
           type: string
+      example:
+        id: 22222222-2222-2222-2222-222222222001
+        firstName: Jean-Luc
+        lastName: Raharimanana
 
     AuthorCreateRequest:
       type: object
@@ -847,6 +1232,10 @@ components:
         bio:
           type: string
           maxLength: 2000
+      example:
+        firstName: Amin
+        lastName: Maalouf
+        bio: "Ecrivain franco-libanais, membre de l'Académie française."
 
     AuthorUpdateRequest:
       type: object
@@ -860,6 +1249,10 @@ components:
         bio:
           type: string
           maxLength: 2000
+      example:
+        firstName: Jean-Luc
+        lastName: Raharimanana
+        bio: "Ecrivain et poète malgache, figure majeure de la littérature contemporaine."
 
     AuthorResponse:
       type: object
@@ -874,6 +1267,11 @@ components:
           type: string
         bio:
           type: string
+      example:
+        id: 22222222-2222-2222-2222-222222222001
+        firstName: Jean-Luc
+        lastName: Raharimanana
+        bio: "Ecrivain malgache, auteur de romans et nouvelles explorant l'histoire de Madagascar."
 
     AuthorPage:
       type: object
@@ -901,6 +1299,9 @@ components:
           readOnly: true
         name:
           type: string
+      example:
+        id: 33333333-3333-3333-3333-333333333001
+        name: Roman
 
     GenreCreateRequest:
       type: object
@@ -909,6 +1310,8 @@ components:
         name:
           type: string
           maxLength: 100
+      example:
+        name: Fantastique
 
     GenreRevenueResponse:
       type: object
@@ -923,6 +1326,15 @@ components:
           type: number
           format: double
           readOnly: true
+        saleCount:
+          type: integer
+          format: int64
+          readOnly: true
+      example:
+        genreId: 33333333-3333-3333-3333-333333333001
+        genreName: Roman
+        totalRevenue: 82000
+        saleCount: 3
 
     GenreResponse:
       type: object
@@ -933,6 +1345,9 @@ components:
           readOnly: true
         name:
           type: string
+      example:
+        id: 33333333-3333-3333-3333-333333333001
+        name: Roman
 
     PublisherSummary:
       type: object
@@ -945,6 +1360,10 @@ components:
           type: string
         country:
           type: string
+      example:
+        id: 11111111-1111-1111-1111-111111111003
+        name: Editions Jeunes Malgaches
+        country: Madagascar
 
     PublisherCreateRequest:
       type: object
@@ -956,6 +1375,9 @@ components:
         country:
           type: string
           maxLength: 100
+      example:
+        name: Foi et Justice
+        country: Madagascar
 
     PublisherResponse:
       type: object
@@ -968,6 +1390,10 @@ components:
           type: string
         country:
           type: string
+      example:
+        id: 11111111-1111-1111-1111-111111111003
+        name: Editions Jeunes Malgaches
+        country: Madagascar
 
     BookEditionCreateRequest:
       type: object
@@ -996,6 +1422,15 @@ components:
         publisherId:
           type: string
           format: uuid
+      example:
+        isbn: "978-2-84487-000-1"
+        format: PAPERBACK
+        sellingPrice: 32000
+        publishedDate: "2015-03-10"
+        coverImageUrl: "https://covers.example.com/nour1947.jpg"
+        condition: NEW
+        quantityInStock: 12
+        publisherId: 11111111-1111-1111-1111-111111111003
 
     BookEditionResponse:
       type: object
@@ -1029,6 +1464,21 @@ components:
           readOnly: true
         publisher:
           $ref: '#/components/schemas/PublisherSummary'
+      example:
+        id: 55555555-5555-5555-5555-555555555001
+        isbn: "978-2-84487-000-1"
+        format: PAPERBACK
+        sellingPrice: 32000
+        publishedDate: "2015-03-10"
+        coverImageUrl: "https://covers.example.com/nour1947.jpg"
+        condition: NEW
+        quantityInStock: 12
+        totalReceived: 20
+        totalSold: 8
+        publisher:
+          id: 11111111-1111-1111-1111-111111111003
+          name: Editions Jeunes Malgaches
+          country: Madagascar
 
     ReviewCreateRequest:
       type: object
@@ -1044,6 +1494,10 @@ components:
         userId:
           type: string
           format: uuid
+      example:
+        rating: 5
+        comment: "Chef-d'oeuvre de la littérature française."
+        userId: 99999999-9999-9999-9999-999999999001
 
     ReviewResponse:
       type: object
@@ -1064,6 +1518,12 @@ components:
           type: string
           format: uuid
           readOnly: true
+      example:
+        id: 77777777-7777-7777-7777-777777777001
+        rating: 5
+        comment: "Un roman bouleversant sur l'histoire de Madagascar, à lire absolument."
+        createdAt: "2025-02-14T10:30:00Z"
+        userId: 99999999-9999-9999-9999-999999999001
 
     StockResponse:
       type: object
@@ -1075,6 +1535,10 @@ components:
           type: string
         quantityInStock:
           type: integer
+      example:
+        editionId: 55555555-5555-5555-5555-555555555001
+        isbn: "978-2-84487-000-1"
+        quantityInStock: 12
 
     ArrivalItemRequest:
       type: object
@@ -1092,6 +1556,11 @@ components:
           exclusiveMinimum: 0
         condition:
           $ref: '#/components/schemas/BookCondition'
+      example:
+        editionId: 55555555-5555-5555-5555-555555555001
+        quantity: 10
+        unitCost: 22000
+        condition: NEW
 
     ArrivalRequest:
       type: object
@@ -1107,6 +1576,14 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/ArrivalItemRequest'
+      example:
+        arrivalDate: "2025-07-01"
+        notes: "Nouveaux titres auteurs malgaches."
+        items:
+          - editionId: 55555555-5555-5555-5555-555555555001
+            quantity: 10
+            unitCost: 22000
+            condition: NEW
 
     ArrivalItemResponse:
       type: object
@@ -1131,6 +1608,14 @@ components:
           format: uuid
         editionIsbn:
           type: string
+      example:
+        id: 99999999-8888-8888-8888-888888888005
+        quantity: 10
+        unitCost: 22000
+        lineTotal: 220000
+        condition: NEW
+        editionId: 55555555-5555-5555-5555-555555555001
+        editionIsbn: "978-2-84487-000-1"
 
     ArrivalResponse:
       type: object
@@ -1151,6 +1636,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ArrivalItemResponse'
+      example:
+        id: 88888888-8888-8888-8888-888888888003
+        arrivalDate: "2025-07-01"
+        notes: "Nouveaux titres auteurs malgaches."
+        totalCost: 409000
+        items:
+          - id: 99999999-8888-8888-8888-888888888005
+            quantity: 10
+            unitCost: 22000
+            lineTotal: 220000
+            condition: NEW
+            editionId: 55555555-5555-5555-5555-555555555001
+            editionIsbn: "978-2-84487-000-1"
 
     SaleItemRequest:
       type: object
@@ -1162,6 +1660,9 @@ components:
         quantity:
           type: integer
           exclusiveMinimum: 0
+      example:
+        editionId: 55555555-5555-5555-5555-555555555006
+        quantity: 1
 
     SaleRequest:
       type: object
@@ -1181,6 +1682,13 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/SaleItemRequest'
+      example:
+        userId: 99999999-9999-9999-9999-999999999001
+        email: hei.irina.4@gmail.com
+        paymentMethod: MOBILE_MONEY
+        items:
+          - editionId: 55555555-5555-5555-5555-555555555006
+            quantity: 1
 
     SaleItemResponse:
       type: object
@@ -1204,6 +1712,13 @@ components:
           format: uuid
         editionIsbn:
           type: string
+      example:
+        id: bbbbbbbb-1111-1111-1111-111111111001
+        quantity: 1
+        unitPrice: 55000
+        lineTotal: 55000
+        editionId: 55555555-5555-5555-5555-555555555006
+        editionIsbn: "978-2-07-054127-8"
 
     SaleResponse:
       type: object
@@ -1226,14 +1741,24 @@ components:
         userId:
           type: string
           format: uuid
-        email:
-          type: string
-          format: email
-          readOnly: true
         items:
           type: array
           items:
             $ref: '#/components/schemas/SaleItemResponse'
+      example:
+        id: aaaaaaaa-1111-1111-1111-111111111001
+        saleDate: "2025-06-15T11:00:00"
+        totalAmount: 55000
+        paymentMethod: MOBILE_MONEY
+        status: CONFIRMED
+        userId: 99999999-9999-9999-9999-999999999001
+        items:
+          - id: bbbbbbbb-1111-1111-1111-111111111001
+            quantity: 1
+            unitPrice: 55000
+            lineTotal: 55000
+            editionId: 55555555-5555-5555-5555-555555555006
+            editionIsbn: "978-2-07-054127-8"
 
     BookResponse:
       type: object
@@ -1264,6 +1789,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReviewResponse'
+      example:
+        id: 44444444-4444-4444-4444-444444444001
+        title: "Nour, 1947"
+        description: "Roman évoquant l'insurrection malgache de 1947."
+        language: FR
+        authors:
+          - id: 22222222-2222-2222-2222-222222222001
+            firstName: Jean-Luc
+            lastName: Raharimanana
+        genres:
+          - id: 33333333-3333-3333-3333-333333333001
+            name: Roman
+          - id: 33333333-3333-3333-3333-333333333004
+            name: Histoire
+        editions:
+          - id: 55555555-5555-5555-5555-555555555001
+            isbn: "978-2-84487-000-1"
+            format: PAPERBACK
+            sellingPrice: 32000
+            publishedDate: "2015-03-10"
+            coverImageUrl: "https://covers.example.com/nour1947.jpg"
+            condition: NEW
+            quantityInStock: 12
+            totalReceived: 20
+            totalSold: 8
+            publisher:
+              id: 11111111-1111-1111-1111-111111111003
+              name: Editions Jeunes Malgaches
+              country: Madagascar
+        reviews:
+          - id: 77777777-7777-7777-7777-777777777001
+            rating: 5
+            comment: "Un roman bouleversant sur l'histoire de Madagascar, à lire absolument."
+            createdAt: "2025-02-14T10:30:00Z"
+            userId: 99999999-9999-9999-9999-999999999001
 
     BookPage:
       type: object
@@ -1306,6 +1866,15 @@ components:
           items:
             type: string
             format: uuid
+      example:
+        title: "Au-delà des rizières"
+        description: "Fresque historique sur Madagascar au XIXe siècle."
+        language: FR
+        authorIds:
+          - 22222222-2222-2222-2222-222222222005
+        genreIds:
+          - 33333333-3333-3333-3333-333333333001
+          - 33333333-3333-3333-3333-333333333004
 
     BookUpdateRequest:
       type: object
@@ -1331,6 +1900,14 @@ components:
           items:
             type: string
             format: uuid
+      example:
+        title: "Le Petit Prince"
+        description: "Conte poétique et philosophique, édition révisée."
+        language: FR
+        authorIds:
+          - 22222222-2222-2222-2222-222222222003
+        genreIds:
+          - 33333333-3333-3333-3333-333333333003
 
     BookPatchRequest:
       type: object
@@ -1355,6 +1932,8 @@ components:
           items:
             type: string
             format: uuid
+      example:
+        description: "Nouvelle description mise à jour."
 
     ApiError:
       type: object
@@ -1371,3 +1950,9 @@ components:
           type: string
         path:
           type: string
+      example:
+        timestamp: "2025-07-08T10:15:30Z"
+        status: 404
+        error: Not Found
+        message: "Book with id 44444444-4444-4444-4444-444444444099 was not found"
+        path: /books/44444444-4444-4444-4444-444444444099

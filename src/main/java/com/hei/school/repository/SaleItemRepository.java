@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface SaleItemRepository extends JpaRepository<SaleItem, UUID> {
 
   @Query(
-      "SELECT si FROM SaleItem si JOIN si.edition e JOIN e.book b JOIN b.genres g WHERE g.id = :genreId")
+      "SELECT si FROM SaleItem si JOIN si.edition e JOIN e.book b JOIN b.genres g WHERE g.id ="
+          + " :genreId")
   List<SaleItem> findByGenreId(@Param("genreId") UUID genreId);
 }
