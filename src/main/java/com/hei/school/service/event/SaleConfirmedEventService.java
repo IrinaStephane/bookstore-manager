@@ -79,13 +79,14 @@ public class SaleConfirmedEventService implements Consumer<SaleConfirmedEvent> {
     String htmlBody =
         "<html><body><h2>Sale Confirmed</h2><p>Thank you for your purchase!</p>"
             + tableHtml
-            + "<p><a href=\"" + downloadUrl + "\">Download your receipt</a></p>"
+            + "<p><a href=\""
+            + downloadUrl
+            + "\">Download your receipt</a></p>"
             + "</body></html>";
 
     InternetAddress recipient = new InternetAddress(event.getEmail());
     mailer.accept(
-        new Email(
-            recipient, List.of(), List.of(), "Sale Confirmed", htmlBody, List.of()));
+        new Email(recipient, List.of(), List.of(), "Sale Confirmed", htmlBody, List.of()));
 
     receiptPdf.delete();
   }
