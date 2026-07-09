@@ -11,6 +11,7 @@ import com.hei.school.entity.Genre;
 import com.hei.school.entity.enums.Language;
 import com.hei.school.exception.BookAlreadyExistsException;
 import com.hei.school.exception.BookNotFoundException;
+import com.hei.school.exception.ResourceNotFoundException;
 import com.hei.school.repository.AuthorRepository;
 import com.hei.school.repository.BookRepository;
 import com.hei.school.repository.GenreRepository;
@@ -153,7 +154,8 @@ public class BookServiceImpl implements BookService {
                     .findById(authorId)
                     .orElseThrow(
                         () ->
-                            new RuntimeException("Author with id " + authorId + " was not found")))
+                            new ResourceNotFoundException(
+                                "Author with id " + authorId + " was not found")))
         .toList();
   }
 
@@ -165,7 +167,9 @@ public class BookServiceImpl implements BookService {
                 genreRepository
                     .findById(genreId)
                     .orElseThrow(
-                        () -> new RuntimeException("Genre with id " + genreId + " was not found")))
+                        () ->
+                            new ResourceNotFoundException(
+                                "Genre with id " + genreId + " was not found")))
         .toList();
   }
 }

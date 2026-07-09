@@ -39,8 +39,17 @@ public class BookMapper {
         .description(domain.getDescription())
         .language(domain.getLanguage())
         .authors(
-            domain.getAuthors().stream().map(this::toAuthorSummary).collect(Collectors.toList()))
-        .genres(domain.getGenres().stream().map(this::toGenreSummary).collect(Collectors.toList()))
+            domain.getAuthors() == null
+                ? Collections.emptyList()
+                : domain.getAuthors().stream()
+                    .map(this::toAuthorSummary)
+                    .collect(Collectors.toList()))
+        .genres(
+            domain.getGenres() == null
+                ? Collections.emptyList()
+                : domain.getGenres().stream()
+                    .map(this::toGenreSummary)
+                    .collect(Collectors.toList()))
         .editions(editions)
         .reviews(reviews)
         .build();

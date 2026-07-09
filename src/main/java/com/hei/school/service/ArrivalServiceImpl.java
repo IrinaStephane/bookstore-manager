@@ -40,7 +40,7 @@ public class ArrivalServiceImpl implements ArrivalService {
               .orElseThrow(
                   () ->
                       new ResourceNotFoundException(
-                          "Edition with id " + itemReq.getEditionId() + " not found"));
+                          "Edition with id " + itemReq.getEditionId() + " was not found"));
 
       edition.incrementStock(itemReq.getQuantity());
       bookEditionRepository.save(edition);
