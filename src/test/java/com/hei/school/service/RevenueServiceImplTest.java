@@ -1,6 +1,7 @@
 package com.hei.school.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.hei.school.endpoint.rest.model.GenreRevenueResponse;
