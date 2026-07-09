@@ -41,11 +41,15 @@ public class BookMapper {
         .authors(
             domain.getAuthors() == null
                 ? Collections.emptyList()
-                : domain.getAuthors().stream().map(this::toAuthorSummary).collect(Collectors.toList()))
+                : domain.getAuthors().stream()
+                    .map(this::toAuthorSummary)
+                    .collect(Collectors.toList()))
         .genres(
             domain.getGenres() == null
                 ? Collections.emptyList()
-                : domain.getGenres().stream().map(this::toGenreSummary).collect(Collectors.toList()))
+                : domain.getGenres().stream()
+                    .map(this::toGenreSummary)
+                    .collect(Collectors.toList()))
         .editions(editions)
         .reviews(reviews)
         .build();

@@ -60,11 +60,13 @@ class SaleServiceImplTest {
 
     given(bookEditionRepository.findById(editionId)).willReturn(Optional.of(edition));
     given(bookEditionRepository.save(edition)).willReturn(edition);
-    given(saleRepository.save(any(Sale.class))).willAnswer(inv -> {
-      Sale s = inv.getArgument(0);
-      s.setId(UUID.randomUUID());
-      return s;
-    });
+    given(saleRepository.save(any(Sale.class)))
+        .willAnswer(
+            inv -> {
+              Sale s = inv.getArgument(0);
+              s.setId(UUID.randomUUID());
+              return s;
+            });
 
     saleService.createSale(request);
 
@@ -133,11 +135,13 @@ class SaleServiceImplTest {
 
     given(bookEditionRepository.findById(editionId)).willReturn(Optional.of(edition));
     given(bookEditionRepository.save(edition)).willReturn(edition);
-    given(saleRepository.save(any(Sale.class))).willAnswer(inv -> {
-      Sale s = inv.getArgument(0);
-      s.setId(UUID.randomUUID());
-      return s;
-    });
+    given(saleRepository.save(any(Sale.class)))
+        .willAnswer(
+            inv -> {
+              Sale s = inv.getArgument(0);
+              s.setId(UUID.randomUUID());
+              return s;
+            });
     doThrow(new RuntimeException("Event failed")).when(eventProducer).accept(anyList());
 
     assertDoesNotThrow(() -> saleService.createSale(request));
