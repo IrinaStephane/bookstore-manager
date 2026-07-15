@@ -1,7 +1,6 @@
 package com.hei.school.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
@@ -43,9 +42,7 @@ class IsbnLookupServiceImplTest {
 
     given(restTemplate.getForObject("https://openlibrary.org/isbn/" + isbn + ".json", Map.class))
         .willReturn(openLibraryResponse);
-    given(
-            restTemplate.getForObject(
-                "https://openlibrary.org/authors/OL1A.json", Map.class))
+    given(restTemplate.getForObject("https://openlibrary.org/authors/OL1A.json", Map.class))
         .willReturn(authorResponse);
 
     Map<String, Object> result = isbnLookupService.lookup(isbn);
@@ -76,7 +73,9 @@ class IsbnLookupServiceImplTest {
     openLibraryResponse.put("title", "Test Book");
     openLibraryResponse.put("number_of_pages", 200);
 
-    given(restTemplate.getForObject("https://openlibrary.org/isbn/" + cleanIsbn + ".json", Map.class))
+    given(
+            restTemplate.getForObject(
+                "https://openlibrary.org/isbn/" + cleanIsbn + ".json", Map.class))
         .willReturn(openLibraryResponse);
 
     Map<String, Object> result = isbnLookupService.lookup(isbn);
@@ -137,8 +136,7 @@ class IsbnLookupServiceImplTest {
     openLibraryResponse.put("key", "/books/OL1M");
     openLibraryResponse.put("title", "Multi Author Book");
     openLibraryResponse.put(
-        "authors",
-        List.of(Map.of("key", "/authors/OL1A"), Map.of("key", "/authors/OL2A")));
+        "authors", List.of(Map.of("key", "/authors/OL1A"), Map.of("key", "/authors/OL2A")));
 
     given(restTemplate.getForObject("https://openlibrary.org/isbn/" + isbn + ".json", Map.class))
         .willReturn(openLibraryResponse);

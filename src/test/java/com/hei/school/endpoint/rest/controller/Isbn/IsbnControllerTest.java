@@ -41,7 +41,8 @@ class IsbnControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$['ISBN:9781234567890'].title").value("Test Book"))
         .andExpect(jsonPath("$['ISBN:9781234567890'].key").value("/books/OL1M"))
-        .andExpect(jsonPath("$['ISBN:9781234567890'].url").value("https://openlibrary.org/books/OL1M"))
+        .andExpect(
+            jsonPath("$['ISBN:9781234567890'].url").value("https://openlibrary.org/books/OL1M"))
         .andExpect(jsonPath("$['ISBN:9781234567890'].authors[0].name").value("Test Author"))
         .andExpect(jsonPath("$['ISBN:9781234567890'].number_of_pages").value(300));
   }
