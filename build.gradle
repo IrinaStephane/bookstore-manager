@@ -155,6 +155,7 @@ dependencies {
 
 implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.2'
 implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+implementation 'org.webjars:swagger-ui:5.32.8'
 
 
 }
